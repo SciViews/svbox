@@ -132,6 +132,9 @@ RUN mkdir -p "/usr/local/lib/R/site-library" \
     # Generate locales
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
+    # A user rstudio/rstudio is already created with UID 1000
+    && groupmod -g 1001 rstudio \
+    && usermod -u 1001 -g 1001 rstudio \
     # Create user
     && adduser --disabled-password \
         --gecos "Default user" \
