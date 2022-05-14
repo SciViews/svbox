@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONDA_DIR=${CONDA_DIR=/srv/conda}
+
 set -ex
 
 cd $(dirname $0)

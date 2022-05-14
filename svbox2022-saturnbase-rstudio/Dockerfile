@@ -1,16 +1,18 @@
-FROM rocker/geospatial:4.1.3
-EXPOSE 8888
+FROM sciviews/svbox2022:latest
 
 # Modified from https://github.com/saturncloud/images/blob/main/saturnbase-rstudio-gpu-11.1/Dockerfile
 # Original vendor: Saturn Cloud
 # Original author: Jacqueline Nolis
+# # Almost all credits should go to her!
 LABEL org.opencontainers.image.licenses="GPL-2.0-or-later" \
       org.opencontainers.image.source="https://github.com/SciViews/svbox" \
       org.opencontainers.image.vendor="SciViews" \
-      org.opencontainers.image.authors="Philippe Grosjean" \
-      org.opencontainers.image.description="SciViews Box 2022 on Saturn Cloud"
+      org.opencontainers.image.authors="Philippe Grosjean <phgrosjean@sciviews.org>" \
+      org.opencontainers.image.description="SciViews Box 2022 on Saturn Cloud base image inspired by saturnbase-rstudio-gpu-11.1 by Jacqueline Nolis (all credit to her !)"
 
 # SETUP SATURN (and install linux libraries for R & Rstudio)
+
+EXPOSE 8888
 
 ENV APP_BASE=/srv
 ENV CONDA_DIR=/srv/conda
@@ -27,153 +29,40 @@ ENV HOME=/home/${NB_USER}
 
 ARG TINI_VERSION=0.18.0
 
-# Make all library folders readable then let R known, then set up reticulate package
-RUN mkdir -p "/usr/local/lib/R/site-library" \
-    && chown 1000:1000 -R /usr/local/lib/R \
-    && chmod 777 -R /usr/local/lib/R \
-    && su -c "echo 'RETICULATE_PYTHON=/opt/saturncloud/envs/saturn/bin/python' >> /usr/local/lib/R/etc/Renviron.site" \
-    && su -c "echo 'RSTUDIO_PANDOC=/usr/lib/rstudio-server/bin/pandoc' >> /usr/local/lib/R/etc/Renviron.site" \
-    && apt-get -qq --allow-releaseinfo-change update \
-    # Install packages
-    && apt-get update --fix-missing \
-    && apt-get upgrade -y \
-    && apt-get install --yes --no-install-recommends \
-        awscli \
-        build-essential \
-        bzip2 \
-        ca-certificates \
-        curl \
-        devscripts \
-        file \
-        gdebi-core \
-        gettext-base \
-        git \
-        gnupg \
-        htop \
-        libcap2 \
-        libcurl4-openssl-dev \
-        libglib2.0-0 \
-        libpq5 \
-        libsm6 \
-        libssl-dev \
-        libssl1.1 \
-        libuser \
-        libuser1-dev \
-        libxml2 \
-        libxml2-dev \
-        libzmq3-dev \
-        locales \
-        openssh-client \
-        openssh-server \
-        openssl \
-        psmisc \
-        qpdf \
-        rrdtool \
-        rsync \
-        screen \
-        ssh \
-        sudo \
-        wget \
-        unixodbc \
-        unixodbc-dev \
-        libglpk-dev \
+COPY scripts/install_saturnbase.sh /saturn_scripts/install_saturnbase.sh
 
-        # PhG: added
-        libicu-dev \
-        libmagick++-dev \
-        libjpeg-turbo* \
-        libpng16* \
-        libtiff* \
-        libglpk-dev \
-        libsasl2-dev \
-        libsecret-1-dev \
-        hunspell-en-us \
-        hunspell-en-gb \
-        xdg-utils \
-        net-tools \
-        nano \
-        libgit2-dev \
-        libudunits2-0 \
-        libproj-dev \
-        libcgal-dev \
-        libglu1-mesa-dev \
-        libprotobuf-dev \
-        protobuf-compiler \
-     > /dev/null \
-    && sudo apt purge \
-    && sudo apt clean \
-    && sudo rm -rf /var/lib/apt/lists/* \
-    # Runtime settings ------------------------------------------------------------#
-    && sudo curl -L -o /usr/local/bin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini \
-    && sudo chmod +x /usr/local/bin/tini \
-    # Add a few R packages that are useful for RMarkdown
-    && Rscript -e "install.packages(c( \
-        'jquerylib', \
-        'markdown', \
-        'rmarkdown', \
-        'tinytex' \
-        ), Ncpus = max(c(1, parallel::detectCores() - 1)), \
-        dependencies = c('LinkingTo', 'Depends', 'Imports'), \
-        lib = '/usr/local/lib/R/site-library' \
-        )" \
-    # add snowflake ODBC driver
-    && sudo apt-get install -f \
-    && wget https://sfc-repo.snowflakecomputing.com/odbc/linux/2.24.0/snowflake-odbc-2.24.0.x86_64.deb -O snowflake-odbc.deb \
-    && sudo dpkg -i snowflake-odbc.deb \
-    && sudo wget https://saturn-public-data.s3.us-east-2.amazonaws.com/r-odbc/odbc.ini -O /usr/lib/snowflake/odbc/lib/odbc.ini \
-    && sudo wget https://saturn-public-data.s3.us-east-2.amazonaws.com/r-odbc/odbcinst.ini -O /usr/lib/snowflake/odbc/lib/odbcinst.ini \
-    # Cleanup
-    && sudo rm -rf /tmp/* \
-    && apt-get -qq purge \
-    && apt-get -qq clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /run/sshd \
-    && chmod 755 /run/sshd \
-    # Generate locales
-    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
-    && locale-gen \
-    # A user rstudio/rstudio is already created with UID 1000
-    && groupmod -g 1001 rstudio \
-    && usermod -u 1001 -g 1001 rstudio \
-    # Create user
-    && adduser --disabled-password \
-        --gecos "Default user" \
-        --uid ${NB_UID} \
-        ${NB_USER} \
-    # Give user sudo access
-    && echo "$NB_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/notebook \
-    && mkdir -p ${APP_BASE} \
-    && mkdir -p /opt/saturncloud \
-    && ln -s /opt/saturncloud /srv/conda \
-    # Give user ownership of conda and app
-    && chown 1000:1000 -R /opt/saturncloud \
-    && chown -R $NB_USER:$NB_USER ${APP_BASE}
+RUN chmod +x /saturn_scripts/install_saturnbase.sh && /saturn_scripts/install_saturnbase.sh
 
 USER ${NB_USER}
 
-COPY install-miniconda.bash /tmp/install-miniconda.bash
-COPY setup-conda.bash /tmp/setup-conda.bash
-COPY environment.yml /tmp/environment.yml
-
 # Install miniconda
-RUN bash /tmp/install-miniconda.bash && \
-    bash /tmp/setup-conda.bash && \
+COPY scripts_user /tmp
+
+RUN sudo chown 1000:1000 /tmp/*.sh && \
+    sudo chmod ugo+x /tmp/*.sh && \
+    bash /tmp/install-miniconda.sh && \
+    bash /tmp/setup-conda.sh && \
     echo '' > ${CONDA_DIR}/conda-meta/history && \
     ${CONDA_BIN}/conda config --system --add channels conda-forge && \
     ${CONDA_BIN}/conda config --system --set auto_update_conda false && \
     ${CONDA_BIN}/conda config --system --set show_channel_urls true
+
 ENV NPM_DIR ${APP_BASE}/npm
 ENV NB_PYTHON_PREFIX ${CONDA_DIR}/envs/saturn
 ENV PATH ${NB_PYTHON_PREFIX}/bin:${CONDA_BIN}:${NPM_DIR}/bin:${HOME}/.local/bin:${PATH}
+
 WORKDIR ${HOME}
 
-# Configure rstudio
-COPY --chown=root:root rstudio-start.sh /usr/local/bin/rstudio-start.sh
+# Configure RStudio
+COPY --chown=root:root scripts_user/rstudio-start.sh /usr/local/bin/rstudio-start.sh
+
 RUN sudo chmod +x /usr/local/bin/rstudio-start.sh
 
-COPY --chown=root:root database.conf /etc/rstudio/database.conf
 COPY --chown=root:root rserver.conf /etc/rstudio/rserver.conf
-COPY --chown=root:root rstudio-prefs.json /etc/rstudio/rstudio-prefs.json
+COPY --chown=root:root database.conf /etc/rstudio/database.conf
+# Already done in svbox2022-verse
+#COPY --chown=root:root rstudio-prefs.json /etc/rstudio/rstudio-prefs.json
 
 ENTRYPOINT ["tini", "--"]
+
 CMD ["/usr/local/bin/rstudio-start.sh"]

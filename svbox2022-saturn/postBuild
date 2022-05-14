@@ -1,0 +1,16 @@
+NCPUS=${NCPUS:--1}
+
+install2.r --error --skipinstalled -n "$NCPUS" \
+    data.table \
+    devtools \
+    dplyr \
+    ggplot2 \
+    lubridate \
+    Rcpp \
+    readr \
+    remotes \
+    reticulate \
+    stringr \
+    tidyr \
+    forcats \
+    tidyverse

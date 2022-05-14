@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONDA_BIN=${CONDA_BIN=/srv/conda/bin}
+
 set -ex
 export PATH="${CONDA_BIN}:${PATH}"
 
