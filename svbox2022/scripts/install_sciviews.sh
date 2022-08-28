@@ -50,23 +50,23 @@ install2.r --error --skipinstalled -n "$NCPUS" \
     flexdashboard flipdownr fontawesome forcats foreach formatR fortunes fs \
     furrr future future.apply future.callr gdtools generics getPass GGally \
     gganimate ggconf ggcorrplot ggdendro ggExtra ggfortify ggiraph ggpackets \
-    ggpubr ggRandomForests ggrepel ggridges ggsci ggsignif ggsn ggsom ghclass \
-    gitcreds glmnet glue golem googlesheets4 gridBase gridExtra gridGraphics \
-    gstat haven here Hmisc htmltools htmlwidgets httpuv httr igraph inline \
-    ipred IRkernel iterators janitor job jsonlite keyring knitr knitcitations \
-    kohonen later lattice latticeExtra leaflet lifecycle lindia lintr lobstr \
-    lme4 lmerTest lubridate magrittr mapedit maps mapsf mapview markdown \
-    memoise microbenchmark mime miniCRAN miniUI mlbench modelr mongolite \
-    mosaic multcomp mvtnorm naniar nanotime nparcomp odbc pagedown pak \
-    palmerpenguins pander parsnip patchwork piggyback pillar pins pkgdepends \
-    pkgdown PKI plotly prettyglm printr pROC progressr promises pryr purrr pwr \
-    quantreg quarto questionr r3js R6 ragg randomForest ranger raster \
-    RColorBrewer Rcpp RcppCCTZ reactlog readxl recipes rhub remotes reprex \
-    reticulate rgl RhpcBLASctl rlang rmarkdown rmdformats ROCR rpart rprojroot \
-    rsample rsconnect RSQLite rticles sessioninfo shiny shinydashboard shinyjs \
-    shinylogs shinytest2 shinytoastr shinyWidgets skimr slider sloop \
-    smotefamily sodium sparklyr spData spelling stars stringi stringr styler \
-    summaryTools suppdata SuppDists svglite svUnit sys targets testthat \
+    ggpubr ggrepel ggridges ggsci ggsignif ggsn ggsom ghclass gitcreds glmnet \
+    glue golem googlesheets4 gridBase gridExtra gridGraphics gstat haven here \
+    Hmisc htmltools htmlwidgets httpuv httr igraph inline ipred IRkernel \
+    iterators janitor job jsonlite keyring knitr knitcitations kohonen later \
+    lattice latticeExtra leaflet lifecycle lindia lintr lobstr lme4 lmerTest \
+    lubridate magrittr mapedit maps mapsf mapview markdown memoise \
+    microbenchmark mime miniCRAN miniUI mlbench modelr mongolite mosaic \
+    multcomp mvtnorm naniar nanotime nparcomp odbc pagedown pak palmerpenguins \
+    pander parsnip patchwork piggyback pillar pins pkgdepends pkgdown PKI \
+    plotly prettyglm printr pROC progressr promises pryr purrr pwr quantreg \
+    quarto questionr R6 ragg randomForest ranger raster RColorBrewer Rcpp \
+    RcppCCTZ reactlog readxl recipes rhub remotes reprex reticulate rgl \
+    RhpcBLASctl rlang rmarkdown rmdformats ROCR rpart rprojroot rsample \
+    rsconnect RSQLite rticles sessioninfo shiny shinydashboard shinyjs \
+    shinylogs shinytest shinytoastr shinyWidgets skimr slider sloop \
+    smotefamily sodium sortable sparklyr spData spelling stars stringi stringr \
+    styler summarytools suppdata SuppDists svglite svUnit sys targets testthat \
     thematic tictoc tidymodels tidyr tidyverse tinytest tmap tmaptools todor \
     TSA tsibble tune usethis UsingR vctrs vegan vembedr vetiver vip viridis \
     viridisLite visdat vroom waldo warp withr workflows workflowsets writexl \
@@ -81,6 +81,7 @@ R -e "options(repos = c(
       'SciViews/exploreit@8aafa47',
       'phgrosjean/aurelhy@v1.0.8',
       'phgrosjean/pastecs@v1.4.1',
+      'rstudio/shinytest2@v1',
       'rstudio/learnr@v0.10.5.9000',
       'rstudio/gradethis@v0.2.5.9000',
       'SciViews/learnitdown@v1.5.1')"
