@@ -38,61 +38,52 @@ apt_install \
     libprotobuf-dev \
     protobuf-compiler
 
-install2.r --error --skipinstalled -n "$NCPUS" \
-    SuppDists \
-    svMisc \
-    svUnit \
-    svGUI \
-    svDialogs \
-    svDialogstcltk \
-    SciViews
-
 ## more R package
 install2.r --error --skipinstalled -n "$NCPUS" \
-    agricolae ape archivist archivist.github argon2 arkdb attachment attempt \
-    automap babynames base64url bench bitops blastula broom.helpers \
-    broom.mixed butcher ca captioner checkmate circular clisymbols \
-    colourpicker config conflicted convertr coro corrplot corrr covr cowplot \
-    crosstable cyphr DataExplorer datasauRus dials distributional doFuture \
-    doParallel doRNG DT egg ellipse ensurer equatags errors exams factoextra \
-    FactoMineR fastai feasts filehash filehashSQLite filelock flashClust \
-    flashlight flexdashboard flextable flipdownr fontawesome foreach formatR \
-    formula.tools ftExtra furrr future.apply future.callr gapminder getPass
-    GGally gganimate ggcorrplot ggdendro ggExtra ggfocus ggforce ggfortify
-    ggfun ggimage ggiraph gglm ggmap ggmosaic ggplotify ggpubr ggRandomForests \
-    ggrepel ggridges ggsci ggside ggsignif ggsn ggsom ggtext ggTimeSeries \
-    ggwordcloud golem goodpractice gridGraphics gt gtsummary here hms \
-    htmlTable huxtable igraph infer inline IRkernel iterators janitor job \
-    kableExtra keyring knitcitations kohonen labelled Lahman latticeExtra
-    lintr listcomp lmtest lobstr logger magick mapedit matrixStats Metrics \
-    MetricsWeighted microbenchmark mlbench mlearning mlflow mockery modeldata \
-    ModelMetrics mongolite mvtnorm naniar nortest odbc officedown officer \
-    operator.tools oysteR pagedown palmerpenguins parsedate parsermd parsnip \
-    pastecs patchwork PERMANOVA piggyback pingr pins pkgdepends pkgdown plotly \
-    plumber pointblank prettyglm printr pROC proto pryr pwr quantities \
-    quantreg questionr quickcheck ragg randomForest ranger RcppExamples \
-    reactlog recipes remoter renv repr rhub rocker ROCR rpart.plot rsample \
-    rstatix rvg seasonal seasonalview settings shinybusy shinydashboard \
-    shinyjs shinylogs shinytest shinytoastr shinyWidgets skimr slider \
-    smotefamily sodium sparklyr spData spelling stlplus survminer tab tables \
-    tactile targets texreg tidycat tidylog tidymodels tiff titanic trackdown \
-    tsibble tune urltools validate validatedb vegan vembedr vip visdat warp \
-    workflows workflowsets writexl x13binary xgboost yaImpute yardstick \
-    zeallot ztable \
-    jpeg reticulate
-
-## a bridge too far? -- brings in another 60 packages
-# install2.r --error --skipinstalled -n "$NCPUS" tidymodels
+    ade4 anytime ape assert assertthat automap available backports base64enc \
+    base64url bench bit bit64 blastula blob bookdown boot broom broom.mixed \
+    butcher ca car circular cli clisymbols collapse config conflicted convertr \
+    coro corrplot corrr covr cowplot crayon curl cyphr data.table datasauRus \
+    DBI dbplyr devtools DiagrammeR dials digest distributional distributions3 \
+    doFuture doParallel doRNG dm DT dtplyr duckdb e1071 egg ellipse esquisse \
+    evaluate factoextra FactoMineR fansi faraway fastcluster fastmap feasts \
+    flashClust flexdashboard flipdownr fontawesome forcats foreach formatR \
+    fortunes fs furrr future future.apply future.callr gdtools generics \
+    getPass GGally gganimate ggconf ggcorrplot ggdendro ggExtra ggfortify \
+    ggiraph ggpackets ggpubr ggRandomForests ggrepel ggridges ggsci ggsignif \
+    ggsn ggsom ghclass gitcreds glmnet glue golem googlesheets4 gridBase \
+    gridExtra gridGraphics gstat haven here Hmisc htmltools htmlwidgets httpuv \
+    httr igraph inline ipred IRkernel iterators janitor job jsonlite keyring \
+    knitr knitcitations kohonen later lattice latticeExtra leaflet lifecycle \
+    lindia lintr lobstr lme4 lmerTest lubridate magrittr mapedit maps mapsf \
+    mapview markdown memoise microbenchmark mime miniCRAN miniUI mlbench \
+    modelr mongolite mosaic multcomp mvtnorm naniar nanotime nparcomp odbc \
+    pagedown pak palmerpenguins pander parsnip patchwork piggyback pillar pins \
+    pkgdepends pkgdown PKI plotly prettyglm printr pROC progressr promises \
+    pryr purrr pwr quantreg quarto questionr r3js R6 ragg randomForest ranger \
+    raster RColorBrewer Rcpp RcppCCTZ reactlog readxl recipes rhub remotes \
+    reprex reticulate rgl RhpcBLASctl rlang rmarkdown rmdformats ROCR rpart \
+    rprojroot rsample rsconnect RSQLite rticles sessioninfo shiny \
+    shinydashboard shinyjs shinylogs shinytest2 shinytoastr shinyWidgets skimr \
+    slider sloop smotefamily sodium sparklyr spData spelling stars stringi \
+    stringr styler summaryTools suppdata SuppDists svglite svUnit sys targets \
+    testthat thematic tictoc tidymodels tidyr tidyverse tinytest tmap \
+    tmaptools todor TSA tsibble tune usethis UsingR vctrs vegan vembedr \
+    vetiver vip viridis viridisLite visdat vroom waldo warp withr workflows \
+    workflowsets writexl xfun xaringan xtable xts yaml yardstick zeallot zoo
 
 # SciViews extensions
 R -e "options(repos = c(
     sciviews = 'https://sciviews.r-universe.dev',
     CRAN     = 'https://packagemanager.rstudio.com/all/__linux__/focal/2022-04-21'))
     install.packages(c('svMisc', 'svBase', 'svFlow', 'data.io', 'chart', 'SciViews'))
-    remotes::install_github(c('SciViews/exploreit', 'phgrosjean/aurelhy',
-      'rstudio/learnr', 'rstudio/gradethis', 'SciViews/learnitdown',
-      'rundel/learnrhash')
-    "
+    remotes::install_github(c(
+      'SciViews/exploreit@8aafa47',
+      'phgrosjean/aurelhy@v1.0.8',
+      'phgrosjean/pastecs@v1.4.1',
+      'rstudio/learnr@v0.10.5.9000',
+      'rstudio/gradethis@v0.2.5.9000',
+      'SciViews/learnitdown@v1.5.1')"
 
 # Our default directory is /home/rstudio/workspace, we create it
 mkdir -p "/home/${DEFAULT_USER}/workspace"
