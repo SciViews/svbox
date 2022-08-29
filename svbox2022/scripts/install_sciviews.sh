@@ -45,16 +45,16 @@ install2.r --error --skipinstalled -n "$NCPUS" \
     base64url bench bit bit64 blastula blob bookdown boot broom broom.mixed \
     butcher ca car chromote circular cli clisymbols collapse config conflicted \
     convertr coro corrplot corrr covr cowplot crayon curl cyphr data.table \
-    datasauRus DBI dbplyr devtools DiagrammeR dials digest distributional \
-    distributions3 doFuture doParallel doRNG dm DT dtplyr e1071 egg ellipse \
-    esquisse evaluate factoextra FactoMineR fansi faraway fastcluster fastmap \
-    feasts flashClust flexdashboard flipdownr fontawesome forcats foreach \
-    formatR fortunes fs furrr future future.apply future.callr gdtools \
-    generics getPass GGally gganimate ggconf ggcorrplot ggdendro ggExtra \
-    ggfortify ggiraph ggpackets ggpubr ggrepel ggridges ggsci ggsignif ggsn \
-    ggsom ghclass gitcreds glmnet glue golem googlesheets4 gridBase gridExtra \
-    gridGraphics gstat haven here Hmisc htmltools htmlwidgets httpuv httr \
-    igraph inline ipred IRkernel iterators janitor job jsonlite keyring \
+    datasauRus DBI dbplyr devtools DiagrammeR dials digest discrim \
+    distributional distributions3 doFuture doParallel doRNG dm DT dtplyr e1071 \
+    egg ellipse esquisse evaluate factoextra FactoMineR fansi faraway \
+    fastcluster fastmap feasts flashClust flexdashboard flipdownr fontawesome \
+    forcats foreach formatR fortunes fs furrr future future.apply future.callr \
+    gdtools generics getPass GGally gganimate ggconf ggcorrplot ggdendro \
+    ggExtra ggfortify ggiraph ggpackets ggpubr ggrepel ggridges ggsci ggsignif \
+    ggsn ggsom ghclass gitcreds glmnet glue golem googlesheets4 gridBase \
+    gridExtra gridGraphics gstat haven here Hmisc htmltools htmlwidgets httpuv \
+    httr igraph inline ipred IRkernel iterators janitor job jsonlite keyring \
     kernlab kknn knitr knitcitations kohonen later lattice latticeExtra \
     leaflet lifecycle lindia lintr lobstr lme4 lmerTest lubridate magrittr \
     mapedit maps mapsf mapview markdown memoise microbenchmark mime miniCRAN \
