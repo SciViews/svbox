@@ -56,13 +56,13 @@ install2.r --error --skipinstalled -n "$NCPUS" \
     gridExtra gridGraphics gstat haven here Hmisc htmltools htmlwidgets httpuv \
     httr igraph inline ipred IRkernel iterators janitor job jsonlite keyring \
     kernlab kknn knitr knitcitations kohonen later lattice latticeExtra \
-    leaflet lifecycle lindia lintr lobstr lme4 lmerTest lubridate magrittr \
-    mapedit maps mapsf mapview markdown memoise microbenchmark mime miniCRAN \
-    miniUI mlbench modelr mongolite mosaic multcomp mvtnorm naniar nanotime \
-    nparcomp odbc pagedown pak palmerpenguins pander parsnip patchwork \
-    piggyback pillar pins pkgdepends pkgdown PKI plotly prettyglm printr pROC \
-    progressr promises pryr purrr pwr quantreg quarto questionr R6 ragg \
-    randomForest ranger raster RColorBrewer Rcpp RcppCCTZ reactlog readxl \
+    leaflet LiblineaR lifecycle lindia lintr lobstr lme4 lmerTest lubridate \
+    magrittr mapedit maps mapsf mapview markdown memoise microbenchmark mime \
+    miniCRAN miniUI mlbench modelr mongolite mosaic multcomp mvtnorm naniar \
+    nanotime nparcomp odbc pagedown pak palmerpenguins pander parsnip \
+    patchwork piggyback pillar pins pkgdepends pkgdown PKI plotly prettyglm \
+    printr pROC progressr promises pryr purrr pwr quantreg quarto questionr R6 \
+    ragg randomForest ranger raster RColorBrewer Rcpp RcppCCTZ reactlog readxl \
     recipes rhub remotes reprex reticulate rgl RhpcBLASctl rlang rmarkdown \
     rmdformats ROCR rpart rprojroot rsample rsconnect RSQLite rticles \
     sessioninfo shiny shinydashboard shinyjs shinylogs shinytest shinytoastr \
