@@ -43,9 +43,9 @@ install2.r --error --skipinstalled -n "$NCPUS" \
     BH sf terra BiocManager \
     ade4 anytime ape assert assertthat automap available backports base64enc \
     base64url bench bit bit64 blastula blob bookdown boot broom broom.mixed \
-    butcher ca car chromote circular cli clisymbols collapse config conflicted \
-    convertr coro corrplot corrr covr cowplot crayon curl cyphr data.table \
-    datasauRus DBI dbplyr devtools DiagrammeR dials digest discrim \
+    butcher ca car chromote circular cli clisymbols coin collapse config \
+    conflicted convertr coro corrplot corrr covr cowplot crayon curl cyphr \
+    data.table datasauRus DBI dbplyr devtools DiagrammeR dials digest discrim \
     distributional distributions3 doFuture doParallel doRNG dm DT dtplyr e1071 \
     egg ellipse esquisse evaluate factoextra FactoMineR fansi faraway \
     fastcluster fastmap feasts flashClust flexdashboard flipdownr fontawesome \
