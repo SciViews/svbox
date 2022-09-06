@@ -46,33 +46,33 @@ install2.r --error --skipinstalled -n "$NCPUS" \
     butcher ca car chromote circular cli clisymbols coin collapse config \
     conflicted convertr coro corrplot corrr covr cowplot crayon curl cyphr \
     data.table datasauRus DBI dbplyr devtools DiagrammeR dials digest discrim \
-    distributional distributions3 doFuture doParallel doRNG dm DT dtplyr e1071 \
-    egg ellipse esquisse evaluate factoextra FactoMineR fansi faraway \
-    fastcluster fastmap feasts flashClust flexdashboard flipdownr fontawesome \
-    forcats foreach formatR fortunes fs furrr future future.apply future.callr \
-    gdtools generics getPass GGally gganimate ggconf ggcorrplot ggdendro \
-    ggExtra ggfortify ggiraph ggpackets ggpubr ggrepel ggridges ggsci ggsignif \
-    ggsn ggsom ghclass gitcreds glmnet glue golem googlesheets4 gridBase \
-    gridExtra gridGraphics gstat haven here Hmisc htmltools htmlwidgets httpuv \
-    httr igraph inline ipred IRkernel iterators janitor job jsonlite keyring \
-    kernlab kknn knitr knitcitations kohonen later lattice latticeExtra \
-    leaflet LiblineaR lifecycle lindia lintr lobstr lme4 lmerTest lubridate \
-    magrittr mapedit maps mapsf mapview markdown memoise microbenchmark mime \
-    miniCRAN miniUI mlbench modelr mongolite mosaic multcomp mvtnorm naniar \
-    nanotime nparcomp nycflights13 odbc pagedown pak palmerpenguins pander \
-    parsnip patchwork piggyback pillar pins pkgdepends pkgdown PKI plotly \
-    prettyglm printr pROC progressr promises pryr purrr pwr quantreg quarto \
-    questionr R6 ragg randomForest ranger raster RColorBrewer Rcpp RcppCCTZ \
-    reactlog readxl recipes rhub remotes reprex reticulate rgl RhpcBLASctl \
-    rlang rmarkdown rmdformats ROCR rpart rprojroot rsample rsconnect RSQLite \
-    rticles sessioninfo shiny shinydashboard shinyjs shinylogs shinytest \
-    shinytoastr shinyWidgets skimr slider sloop smotefamily sodium sortable \
-    sparklyr spData spelling stars stringi stringr styler summarytools \
-    suppdata SuppDists svglite svUnit sys targets testthat thematic tictoc \
-    tidymodels tidyr tidyverse tinytest tmap tmaptools todor transformr TSA \
-    tsibble tune usethis UsingR vctrs vegan vembedr vetiver vip viridis \
-    viridisLite visdat vroom waldo warp withr workflows workflowsets writexl \
-    WriteXLS xfun xaringan xtable xts yaml yardstick zeallot zoo \
+    distributional distributions3 doFuture doParallel doRNG dm DT dtplyr \
+    duckdb e1071 egg ellipse esquisse evaluate factoextra FactoMineR fansi \
+    faraway fastcluster fastmap feasts flashClust flexdashboard flipdownr \
+    fontawesome forcats foreach formatR fortunes fs furrr future future.apply \
+    future.callr gdtools generics getPass GGally gganimate ggconf ggcorrplot \
+    ggdendro ggExtra ggfortify ggiraph ggpackets ggpubr ggrepel ggridges ggsci \
+    ggsignif ggsn ggsom ghclass gitcreds glmnet glue golem googlesheets4 \
+    gridBase gridExtra gridGraphics gstat haven here Hmisc htmltools \
+    htmlwidgets httpuv httr igraph inline ipred IRkernel iterators janitor job \
+    jsonlite keyring kernlab kknn knitr knitcitations kohonen later lattice \
+    latticeExtra leaflet LiblineaR lifecycle lindia lintr lobstr lme4 lmerTest \
+    lubridate magrittr mapedit maps mapsf mapview markdown memoise \
+    microbenchmark mime miniCRAN miniUI mlbench modelr mongolite mosaic \
+    multcomp mvtnorm naniar nanotime nparcomp nycflights13 odbc pagedown pak \
+    palmerpenguins pander parsnip patchwork piggyback pillar pins pkgdepends \
+    pkgdown PKI plotly prettyglm printr pROC progressr promises pryr purrr pwr \
+    quantreg quarto questionr R6 ragg randomForest ranger raster RColorBrewer \
+    Rcpp RcppCCTZ reactlog readxl recipes rhub remotes reprex reticulate rgl \
+    RhpcBLASctl rlang rmarkdown rmdformats ROCR rpart rprojroot rsample \
+    rsconnect RSQLite rticles sessioninfo shiny shinydashboard shinyjs \
+    shinylogs shinytest shinytoastr shinyWidgets skimr slider sloop \
+    smotefamily sodium sortable sparklyr spData spelling stars stringi stringr \
+    styler summarytools suppdata SuppDists svglite svUnit sys targets testthat \
+    thematic tictoc tidymodels tidyr tidyverse tinytest tmap tmaptools todor \
+    transformr TSA tsibble tune usethis UsingR vctrs vegan vembedr vetiver vip \
+    viridis viridisLite visdat vroom waldo warp withr workflows workflowsets \
+    writexl WriteXLS xfun xaringan xtable xts yaml yardstick zeallot zoo \
     magick getPass ggplotify proto renv shinylogs shinytoastr tsibble
 
 # SciViews extensions
