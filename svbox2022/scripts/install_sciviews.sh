@@ -85,6 +85,7 @@ R -e "options(repos = c(
     install.packages(c('svMisc', 'svBase', 'svFlow', 'data.io', 'chart', 'SciViews'))
     remotes::install_github(c(
       'SciViews/exploreit@8aafa47',
+      'SciViews/modelit@v1.0.0',
       'phgrosjean/aurelhy@v1.0.8',
       'phgrosjean/pastecs@v1.4.1',
       'rstudio/shinytest2@v1',
