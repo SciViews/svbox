@@ -84,7 +84,7 @@ R -e "options(repos = c(
       'RDRToolbox'), update = FALSE, ask = FALSE)
     install.packages(c('svMisc', 'svBase', 'svFlow', 'data.io', 'chart', 'SciViews'))
     remotes::install_github(c(
-      'SciViews/exploreit@8aafa47',
+      'SciViews/exploreit@v1.0.0',
       'SciViews/modelit@v1.0.0',
       'phgrosjean/aurelhy@v1.0.8',
       'phgrosjean/pastecs@v1.4.1',
