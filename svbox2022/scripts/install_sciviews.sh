@@ -84,6 +84,7 @@ R -e "options(repos = c(
       'RDRToolbox'), update = FALSE, ask = FALSE)
     install.packages(c('svMisc', 'svBase', 'svFlow', 'data.io', 'chart', 'SciViews'))
     remotes::install_github(c(
+      'r-lib/usethis@v2.1.6', # For v2 R CMD Check GirHub actions
       'SciViews/exploreit@v1.0.0',
       'SciViews/modelit@v1.0.0',
       'phgrosjean/aurelhy@v1.0.8',
