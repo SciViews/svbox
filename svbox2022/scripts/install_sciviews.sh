@@ -92,7 +92,7 @@ R -e "options(repos = c(
       'rstudio/shinytest2@v1',
       'rstudio/learnr@v0.10.5.9000',
       'rstudio/gradethis@v0.2.8.9000',
-      'SciViews/learnitdown@v1.5.1')"
+      'SciViews/learnitdown@v1.5.2')"
 
 # Our default directory is /home/rstudio/workspace, we create it
 mkdir -p "/home/${DEFAULT_USER}/workspace"
