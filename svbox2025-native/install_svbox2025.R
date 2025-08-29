@@ -5,7 +5,7 @@ local({
       delete.xzfile = as.logical(Sys.getenv("SVBOX2025_DELETE_XZFILE", TRUE)),
       include.site.library =
         as.logical(Sys.getenv("SVBOX2025_INCLUDE_SITE_LIBRARY", FALSE))) {
-    
+
     # Check that R is version 4.4.x
     r_version <- getRversion()
     if (r_version < '4.4' || r_version >= '4.5') {
@@ -22,7 +22,7 @@ local({
         "packages should be loaded in the search path.\nRestart the R session ",
         "before switching to the SciViews Box 2025.")
     }
-    
+
     # Depending on the OS and flavor, paths are different
     if (.Platform$OS.type == "windows") {# Windows (assume 64bit Intel)
       # TODO: deal with other architectures
@@ -48,15 +48,15 @@ local({
     # Make sure library directories exists
     dir.create(dirname(sv_lib), recursive = TRUE, showWarnings = FALSE)
     dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
-    
+
     # Check the SciViews Box 2025 library exists or download and uncompress it
     if (!file.exists(file.path(sv_lib, "SciViews", "DESCRIPTION"))) {
       # TODO: check first there is enough disk space
-      
+
       # Temporary switch to the sciviews library
       odir <- setwd(dirname(sv_lib))
       on.exit(setwd(odir))
-      
+
       # Download the SciViews Box 2025 library
       url <- paste0(
         "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files",
@@ -74,7 +74,7 @@ local({
         stop("Cannot download the SciViews Box 2025 library from ", url)
       }
       # TODO: checksum the file to be sure
-      
+
       # Uncompress it
       message("- Uncompressing the SciViews Box 2025 library, please wait...")
       # Timing of this operation as a rough estimate of processing power
@@ -101,9 +101,9 @@ local({
         unlink(dest)
       }
     }
-    
+
     # TODO: make sure that the base packages are loaded on the search path...
-    
+
     # Switch .libPaths()
     message("- Switching to the SciViews Box 2025 library... see .libPaths()")
     old_libPaths <- .libPaths()
@@ -112,7 +112,7 @@ local({
     } else {
       .libPaths(c(user_lib, sv_lib, .Library.site, .Library))
     }
-    
+
     # Change repos
     message("- Switching packages repositories to SciViews and ",
       "CRAN on 2025-04-10 (repos option)")
@@ -120,7 +120,7 @@ local({
     options(repos = c(
       SciViews = "https://sciviews.r-universe.dev",
       CRAN     = "https://packagemanager.posit.co/cran/2025-04-10"))
-    
+
     # Do we make the SciViews Box 2025 permanent?
     if (interactive()) {
       permanent <- utils::askYesNo(
@@ -128,7 +128,7 @@ local({
     } else {
       permanent <- FALSE
     }
-    
+
     # If the user cancels, permanent is NA
     if (is.na(permanent)) {
       unlink(sv_lib, recursive = TRUE)
@@ -136,7 +136,7 @@ local({
       message("- Operation cancelled, SciViews Box 2025 not installed.")
       return(invisible(FALSE))
     }
-    
+
     if (isTRUE(permanent)) {# Write the config in .Rprofile file
       rprofile <- file.path(Sys.getenv("HOME"), ".Rprofile")
       if (file.exists(rprofile)) {
@@ -147,6 +147,8 @@ local({
       }
       message("- Writing the SciViews Box 2025 configuration to '",
         rprofile, "'")
+      rprofile_ver <- paste0(rprofile, "_",
+        R.version$major, ".", R.version$minor, sep = "")
       cat("# SciViews Box 2025 configuration\n",
         "local({\n",
         "  sv_lib <- \"", sv_lib, "\"\n",
@@ -160,9 +162,12 @@ local({
         "    SciViews = 'https://sciviews.r-universe.dev',\n",
         "    CRAN     = 'https://packagemanager.posit.co/cran/2025-04-10'))\n",
         "cat(\"SciViews Box 2025 ready: enter `SciViews::R`\n\")",
-        "})\n\n", file = rprofile, sep = "")
+        "})\n\n", file = rprofile_ver, sep = "")
+
+      cat("if (file.exists(\"", rprofile_ver, "\"))\n",
+        "  source(\"", rprofile_ver, "\")\n\n", file = rprofile, sep = "")
     }
-    
+
     # Final message...
     cat("\n")
     message("== The SciViews Box 2025 is now active. ==============")
@@ -175,6 +180,6 @@ local({
     }
     invisible(TRUE)
   }
-  
+
   .install_svbox2025()
 })
