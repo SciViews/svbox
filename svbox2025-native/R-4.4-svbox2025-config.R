@@ -169,7 +169,7 @@ install_from_url <- function(url) {
 # equatags is too old -> install correct version from GitHub
 remotes::install_github("ardata-fr/equatags@462e77b")
 # New in svbox2025: svTidy, svFast, data.trame and helpai
-install.packages(c("S7", "usethis", "rlang", "groundhog", "equatags",
+install.packages(c("S7", "usethis", "rlang", "groundhog", #"equatags",
   "equatiomatic", "flextable", "mlearning", "pastecs", "aurelhy", "svMisc",
   "svBase", "svFlow", "data.trame", "data.io", "chart", "SciViews", "exploreit",
   "modelit", "inferit", "tabularise", "svTidy", "svFast", "helpai"),
@@ -232,7 +232,7 @@ ip2025names <- rownames(ip2025)
 ip2024names <- c(
   # User library
   "BioDataScience", "BioDataScience1", "BioDataScience2", "BioDataScience3",
-  
+
   # SciViews complements
   "abind", "ade4", "anytime", "ape", "AsioHeaders", "assert", "assertthat",
   "atime", "attempt", "aurelhy", "automap", "available", "babynames",
@@ -323,7 +323,7 @@ ip2024names <- c(
   "workflows", "workflowsets", "writexl", "WriteXLS", "xaringan", "xfun",
   "xgboost", "XML", "xmlparsedata", "xslt", "xts", "yardstick", "yesno",
   "yulab.utils", "zeallot", "zoo",
-  
+
   # Saturn Cloud
   "askpass", "aws.s3", "aws.signature", "backports", "base64enc", "bit",
   "bit64", "blob", "brew", "brio", "broom", "bslib", "cachem", "callr",
@@ -347,7 +347,7 @@ ip2024names <- c(
   "tidyverse", "timechange", "tinytex", "tzdb", "urlchecker", "usethis", "utf8",
   "uuid", "vctrs", "viridisLite", "vroom", "waldo", "whisker", "withr", "xfun",
   "xml2", "xopen", "xtable", "yaml", "zip",
-  
+
   # Base and recommended
   "base", "boot", "class", "cluster", "codetools", "compiler", "datasets",
   "foreign", "graphics", "grDevices", "grid", "KernSmooth", "lattice", "MASS",
@@ -359,7 +359,7 @@ ip2024names <- c(
 # Missing items from 2024:
 ip2024names[!ip2024names %in% ip2025names]
 # learnitr pkgs + gradethis + ggcheck + BioDataScience packages
-# suppdata is not available anymore and eliminated from svbox2025 
+# suppdata is not available anymore and eliminated from svbox2025
 
 # New items:
 ip2025names[!ip2025names %in% ip2024names]
@@ -460,5 +460,3 @@ remotes::install_github(c(
   'BioDataScience-Course/BioDataScience3@v2025.0.0'
 ), upgrade = 'always')
 
-# To get it rapidly:
-#
