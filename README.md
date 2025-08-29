@@ -28,7 +28,7 @@ Enjoy!
 
 You probably also want to install a good editor/IDE for R: [RStudio](https://posit.co/download/rstudio-desktop/), [Positron](https://positron.posit.co), or any preferred software.
 
-In case you want to inspect the installation script before running it, you can download it from <https://go.sciviews.org/svbox2025>.
+In case you want to inspect the installation script before running it, you can download it from <https://go.sciviews.org/svbox2025>. If you want to uninstall the SciViews Box and go back to R as it was before, it is very simple: locate the folder containing the SciViews library (run `.libPaths()` in your R session) and delete it (`sciviews-library`, and also `svuser-library`). If you made the SciViews Box 2025 permanent, you may also want to delete or edit the `.Rprofile` file in your home directory (run `normalizePath("~/.Rprofile")` in R to find it).
 
 
 ## SciViews Box 2025 on Saturn Cloud
