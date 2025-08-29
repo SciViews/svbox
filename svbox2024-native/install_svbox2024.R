@@ -1,15 +1,15 @@
-# Configure R 4.4 into a SciViews Box 2025, using a different library
+# Configure R 4.3 into a SciViews Box 2024, using a different library
 
 local({
-  .install_svbox2025 <- function(
-      delete.xzfile = as.logical(Sys.getenv("SVBOX2025_DELETE_XZFILE", TRUE)),
+  .install_svbox2024 <- function(
+      delete.xzfile = as.logical(Sys.getenv("SVBOX2024_DELETE_XZFILE", TRUE)),
       include.site.library =
-        as.logical(Sys.getenv("SVBOX2025_INCLUDE_SITE_LIBRARY", FALSE))) {
+        as.logical(Sys.getenv("SVBOX2024_INCLUDE_SITE_LIBRARY", FALSE))) {
 
-    # Check that R is version 4.4.x
+    # Check that R is version 4.3.x
     r_version <- getRversion()
-    if (r_version < '4.4' || r_version >= '4.5') {
-      stop("R 4.4.x is required for SciViews Box 2025")
+    if (r_version < '4.3' || r_version >= '4.4') {
+      stop("R 4.3.x is required for SciViews Box 2024")
     }
     # Check that there is no other package on the search path than base ones
     loaded_pkgs <- search()
@@ -20,7 +20,7 @@ local({
     if (!all(loaded_pkgs %in% accepted_pkgs)) {
       stop("Only base, methods, datasets, utils, grDevices, graphics or stats ",
         "packages should be loaded in the search path.\nRestart the R session ",
-        "before switching to the SciViews Box 2025.")
+        "before switching to the SciViews Box 2024.")
     }
 
     # Depending on the OS and flavor, paths are different
@@ -29,18 +29,18 @@ local({
       os <- "win_x86_64"
       user_home <- Sys.getenv("USERPROFILE")
       sv_lib <- file.path(user_home,
-        "AppData", "Local", "R", "sciviews-library", "4.4")
+        "AppData", "Local", "R", "sciviews-library", "4.3")
       user_lib <- file.path(user_home,
-        "AppData", "Local", "R", "svuser-library", "4.4")
-    } else if (grepl("darwin", R.version$os)) {# macOS
+        "AppData", "Local", "R", "svuser-library", "4.3")
+    } else if (grepl("darwin", R.version$os)) {# Mac OS X
       if (R.version$arch == "aarch64") {# Mac Silicon
         os <- "mac_arm64"
-        sv_lib <- "~/Library/R/arm64/4.4/sciviews-library"
-        user_lib <- "~/Library/R/arm64/4.4/svuser-library"
+        sv_lib <- "~/Library/R/arm64/4.3/sciviews-library"
+        user_lib <- "~/Library/R/arm64/4.3/svuser-library"
       } else {# Mac Intel
         os <- "mac_x86_64"
-        sv_lib <- "~/Library/R/x86_64/4.4/sciviews-library"
-        user_lib <- "~/Library/R/x86_64/4.4/svuser-library"
+        sv_lib <- "~/Library/R/x86_64/4.3/sciviews-library"
+        user_lib <- "~/Library/R/x86_64/4.3/svuser-library"
       }
     } else {# Not Windows, nor macOS, not supported for now
       stop("Only Windows and macOS are supported for now.")
@@ -49,7 +49,7 @@ local({
     dir.create(dirname(sv_lib), recursive = TRUE, showWarnings = FALSE)
     dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
 
-    # Check the SciViews Box 2025 library exists or download and uncompress it
+    # Check the SciViews Box 2024 library exists or download and uncompress it
     if (!file.exists(file.path(sv_lib, "SciViews", "DESCRIPTION"))) {
       # Check disk space available (at least 3 GB)
       if (.Platform$OS.type == "windows") {
@@ -64,19 +64,19 @@ local({
       }
       if (as.numeric(avail) < 3)
         stop("At least 3 GB of disk space is required to install the ",
-          "SciViews Box 2025 library. Please, free space on the system disk.")
+          "SciViews Box 2024 library. Please, free space on the system disk.")
 
       # Temporary switch to the sciviews library
       odir <- setwd(dirname(sv_lib))
       on.exit(setwd(odir))
 
-      # Download the SciViews Box 2025 library
+      # Download the SciViews Box 2024 library
       url <- paste0(
-        "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files",
-        "/sciviews-library2025_", os, ".tar.xz")
+        "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2024/files",
+        "/sciviews-library2024_", os, ".tar.xz")
       dest <- basename(url)
       if (!file.exists(dest)) {
-        message("- Downloading the SciViews Box 2025 library...")
+        message("- Downloading the SciViews Box 2024 library...")
         otimeout <- getOption("timeout")
         on.exit(options(timeout = otimeout), add = TRUE)
         options(timeout = max(600, otimeout))
@@ -84,29 +84,29 @@ local({
       }
       # Check
       if (!file.exists(dest)) {
-        stop("Cannot download the SciViews Box 2025 library from ", url)
+        stop("Cannot download the SciViews Box 2024 library from ", url)
       }
       # TODO: checksum the file to be sure
 
       # Uncompress it
-      message("- Uncompressing the SciViews Box 2025 library, please wait...")
+      message("- Uncompressing the SciViews Box 2024 library, please wait...")
       # Timing of this operation as a rough estimate of processing power
       # and if it takes longer than a given value, warn the user that its
-      # computer is probably too slow to run the SciViews Box 2025
+      # computer is probably too slow to run the SciViews Box 2024
       # On an Intel i7-8565U, it took 7,8 minutes to uncompress the library
       # => if it takes more than 10 minutes, warn the user
       timing <- try(system.time(utils::untar(dest))["elapsed"], silent = TRUE)
       if (inherits(timing, "try-error")) {
-        stop("Error when uncompressing the SciViews Box 2025 library: ", timing)
+        stop("Error when uncompressing the SciViews Box 2024 library: ", timing)
       }
       message("done in ", timing, " seconds.")
       if (timing > 600) {
-        warning("Your computer is probably too slow to run ",
-          "the SciViews Box 2025 comfortably.")
+        message("Your computer is probably too slow to run ",
+          "the SciViews Box 2024 comfortably.")
       }
       # Check...
       if (!file.exists(file.path(sv_lib, "SciViews", "DESCRIPTION"))) {
-        stop("Error when uncompressing the SciViews Box 2025 library from ",
+        stop("Error when uncompressing the SciViews Box 2024 library from ",
           dest)
       }
       # Delete the compressed file
@@ -116,7 +116,7 @@ local({
     }
 
     # Switch .libPaths()
-    message("- Switching to the SciViews Box 2025 library... see .libPaths()")
+    message("- Switching to the SciViews Box 2024 library... see .libPaths()")
     old_libPaths <- .libPaths()
     if (isTRUE(include.site.library)) {
       .libPaths(c(user_lib, sv_lib, .Library))
@@ -126,16 +126,16 @@ local({
 
     # Change repos
     message("- Switching packages repositories to SciViews and ",
-      "CRAN on 2025-04-10 (repos option)")
+      "CRAN on 2024-04-20 (repos option)")
     orepos <- getOption("repos")
     options(repos = c(
       SciViews = "https://sciviews.r-universe.dev",
-      CRAN     = "https://packagemanager.posit.co/cran/2025-04-10"))
+      CRAN     = "https://packagemanager.posit.co/cran/2024-04-20"))
 
-    # Do we make the SciViews Box 2025 permanent?
+    # Do we make the SciViews Box 2024 permanent?
     if (interactive()) {
       permanent <- utils::askYesNo(
-        "\nDo you want to make the SciViews Box 2025 permanent?")
+        "\nDo you want to make the SciViews Box 2024 permanent?")
     } else {
       permanent <- FALSE
     }
@@ -144,7 +144,7 @@ local({
     if (is.na(permanent)) {
       unlink(sv_lib, recursive = TRUE)
       unlink(user_lib, recursive = TRUE)
-      message("- Operation cancelled, SciViews Box 2025 not installed.")
+      message("- Operation cancelled, SciViews Box 2024 not installed.")
       return(invisible(FALSE))
     }
 
@@ -156,11 +156,11 @@ local({
           rprofile_bak, "'")
         file.copy(rprofile, rprofile_bak, overwrite = TRUE)
       }
-      message("- Writing the SciViews Box 2025 configuration to '",
+      message("- Writing the SciViews Box 2024 configuration to '",
         rprofile, "'")
       rprofile_ver <- paste0(rprofile, "_",
         R.version$major, ".", R.version$minor, sep = "")
-      cat("# SciViews Box 2025 configuration\n",
+      cat("# SciViews Box 2024 configuration\n",
         "local({\n",
         "  sv_lib <- \"", sv_lib, "\"\n",
         "  user_lib <- \"", user_lib, "\"\n",
@@ -171,17 +171,16 @@ local({
         },
         "  options(repos = c(\n",
         "    SciViews = 'https://sciviews.r-universe.dev',\n",
-        "    CRAN     = 'https://packagemanager.posit.co/cran/2025-04-10'))\n",
-        "cat(\"SciViews Box 2025 ready: enter `SciViews::R`\n\")",
+        "    CRAN     = 'https://packagemanager.posit.co/cran/2024-04-20'))\n",
+        "cat(\"SciViews Box 2024 ready: enter `SciViews::R`\n\")",
         "})\n\n", file = rprofile_ver, sep = "")
 
       cat("if (file.exists(\"", rprofile_ver, "\"))\n",
         "  source(\"", rprofile_ver, "\")\n\n", file = rprofile, sep = "")
     }
-
     # Final message...
     cat("\n")
-    message("== The SciViews Box 2025 is now active. ==============")
+    message("== The SciViews Box 2024 is now active. ==============")
     cat("- `SciViews::R()` as initial command to load the SciViews packages.\n")
     if (isTRUE(permanent)) {
       cat("- Delete '", rprofile,
@@ -192,5 +191,5 @@ local({
     invisible(TRUE)
   }
 
-  .install_svbox2025()
+  .install_svbox2024()
 })

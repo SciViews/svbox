@@ -1,0 +1,24 @@
+## Native SciViews Box 2024 on Windows or macOS in 3 steps!
+
+1. Install R 4.3.3. For [Windows](https://cran.r-project.org/bin/windows/base/old/4.3.3/R-4.3.3-win.exe), for [Apple silicon (M1,2,3,4,...) Macs](https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-4.3.3-arm64.pkg), and for [older Intel Macs](https://cran.r-project.org/bin/macosx/big-sur-x86_64/base/R-4.3.3-x86_64.pkg).
+
+2. Start R and run:
+
+    ```r
+    source("https://go.sciviews.org/svbox2024")
+    ```
+    
+    Answer yes to the question to make the SciViews Box 2024 permanent (of course, you could first say no, test it, and source the script again if you decide to keep it).
+
+4. Once in R, run at the beginning of your session:
+
+    ```r
+    SciViews::R
+    ```
+    to configure the system to the SciViews::R dialect.
+    
+Enjoy!
+
+You probably also want to install a good editor/IDE for R: [RStudio](https://posit.co/download/rstudio-desktop/), [Positron](https://positron.posit.co), or any preferred software.
+
+In case you want to inspect the installation script before running it, you can download it from <https://go.sciviews.org/svbox2024>. If you want to uninstall the SciViews Box and go back to R as it was before, it is very simple: locate the folder containing the SciViews library (run `.libPaths()` in your R session) and delete it (`sciviews-library`, and also `svuser-library`). If you made the SciViews Box 2024 permanent, you may also want to delete or edit the `.Rprofile` file in your home directory (run `normalizePath("~/.Rprofile")` in R to find it).
