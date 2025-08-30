@@ -154,6 +154,7 @@ local({
 
     if (isTRUE(permanent)) {# Write the config in .Rprofile file
       rprofile <- file.path(Sys.getenv("HOME"), ".Rprofile")
+      rprofile <- gsub("\\\\", "/", rprofile)
       if (file.exists(rprofile)) {
         rprofile_bak <- paste0(rprofile, ".bak")
         message("- Backing up your current .Rprofile file to '",
