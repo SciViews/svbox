@@ -32,8 +32,10 @@ local({
       user_home <- Sys.getenv("USERPROFILE")
       sv_lib <- file.path(user_home,
         "AppData", "Local", "R", "sciviews-library", "4.4")
+      sv_lib <- gsub("\\\\", "/", sv_lib)
       user_lib <- file.path(user_home,
         "AppData", "Local", "R", "svuser-library", "4.4")
+      user_lib <- gsub("\\\\", "/", user_lib)
     } else if (grepl("darwin", R.version$os)) {# macOS
       if (R.version$arch == "aarch64") {# Mac Silicon
         os <- "mac_arm64"
@@ -174,7 +176,6 @@ local({
         "  options(repos = c(\n",
         "    SciViews = 'https://sciviews.r-universe.dev',\n",
         "    CRAN     = 'https://packagemanager.posit.co/cran/2025-04-10'))\n",
-        "cat(\"SciViews Box 2025 ready: enter `SciViews::R`\n\")",
         "})\n\n", file = rprofile_ver, sep = "")
 
       cat("if (file.exists(\"", rprofile_ver, "\"))\n",
