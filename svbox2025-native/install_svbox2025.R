@@ -6,6 +6,8 @@ local({
       include.site.library =
         as.logical(Sys.getenv("SVBOX2025_INCLUDE_SITE_LIBRARY", FALSE))) {
 
+    message("=== Installing the SciViews Box 2025...===")
+
     # Check that R is version 4.4.x
     r_version <- getRversion()
     if (r_version < '4.4' || r_version >= '4.5') {
@@ -54,7 +56,7 @@ local({
       # Check disk space available (at least 3 GB)
       if (.Platform$OS.type == "windows") {
         avail <- system(paste0("wmic logicaldisk '",
-          substr(dirname(normalizePath(sv_lib)), 1, 2), "' get FreeSpace"),
+          substr(dirname(dirname(sv_lib)), 1, 2), "' get FreeSpace"),
           intern = TRUE)
         avail <- as.numeric(avail[2])/1024/1024/1024 # In GB
       } else {

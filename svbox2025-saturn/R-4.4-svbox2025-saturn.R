@@ -564,6 +564,14 @@ print(cip_error) # On SaturnCloud, I got errors for tcltk because libtcl8.6.so i
 # Other problems with raster, satellite, websocket, httpuv, later, promises
 # but restarting R and loading manually -> no problems.
 
+# Make a commpressed version of the SciViews library:
+# cd ~/shared/sdd/svbox2025/.R/library/4.4
+# tar cvf sciviews-library2025_saturn.tar 4.4
+# xz - z -9 -e -T0 -v sciviews-library2025_saturn.tar
+# But need a larger machine (XLarge 4 cores - 32GB RAM) with 16Mb RAM for this!
+# Then, download the file and place it on your server.
+
+
 # Once this is done, stop and edit the machine:
 #
 # In environment variables:
