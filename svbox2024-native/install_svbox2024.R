@@ -164,7 +164,7 @@ local({
       message("- Writing the SciViews Box 2024 configuration to '",
         rprofile, "'")
       rprofile_ver <- paste0(rprofile, "_",
-        R.version$major, ".", R.version$minor, sep = "")
+        sub("^([0-9]+\\.[0-9]+)\\..+$", "\\1", getRversion()))
       cat("# SciViews Box 2024 configuration\n",
         "local({\n",
         "  sv_lib <- \"", sv_lib, "\"\n",
@@ -179,8 +179,10 @@ local({
         "    CRAN     = 'https://packagemanager.posit.co/cran/2024-04-20'))\n",
         "})\n\n", file = rprofile_ver, sep = "")
 
-      cat("if (file.exists(\"", rprofile_ver, "\"))\n",
-        "  source(\"", rprofile_ver, "\")\n\n", file = rprofile, sep = "")
+      cat("rprofile_x.y <- paste0('", rprofile,
+        "',\n  '_', sub('^([0-9]+\\\\.[0-9]+)\\\\..+$', '\\\\1', getRversion()))\n",
+        "if (file.exists(rprofile_x.y))\n",
+        "  source(rprofile_x.y)\n\n", file = rprofile, sep = "")
     }
     # Final message...
     cat("\n")

@@ -565,10 +565,11 @@ print(cip_error) # On SaturnCloud, I got errors for tcltk because libtcl8.6.so i
 # but restarting R and loading manually -> no problems.
 
 # Make a commpressed version of the SciViews library:
-# cd ~/shared/sdd/svbox2025/.R/library/4.4
+# cd ~/shared/sdd/svbox2025/.R/library
 # tar cvf sciviews-library2025_saturn.tar 4.4
-# xz - z -9 -e -T0 -v sciviews-library2025_saturn.tar
+# xz -z -9 -e -T0 -v sciviews-library2025_saturn.tar
 # But need a larger machine (XLarge 4 cores - 32GB RAM) with 16Mb RAM for this!
+# It weights 661MB compressed.
 # Then, download the file and place it on your server.
 
 
@@ -879,7 +880,7 @@ echo "Configuring git (pull rebase -> false)..."
 git config --global pull.rebase false
 
 echo "Installing SciViews and user libraries for R..."
-mkdir -p /home/jovyan/R/x86_64-pc-linux-gnu-library/4.3
+mkdir -p /home/jovyan/R/x86_64-pc-linux-gnu-library/4.4
 sudo mkdir -p /usr/local/lib/R/sciviews-library
 sudo chown -R jovyan:jovyan /usr/local/lib/R/sciviews-library
 # Only for plain svbox2025
@@ -887,7 +888,7 @@ sudo chown -R jovyan:jovyan /usr/local/lib/R/sciviews-library
 #  echo "Downloading and installing R packages for SciViews..."
 #  mkdir -p ~/shared/sdd/svbox2025/.R/library
 #  cd ~/shared/sdd/svbox2025/.R/library
-#  curl -o ~/shared/sdd/svbox2025/.R/library/packages.tar.xz "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/svbox2025-saturn-packages.tar.xz"
+#  curl -o ~/shared/sdd/svbox2025/.R/library/packages.tar.xz "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/sciviews-library2025-saturn.tar.xz"
 #  tar -xf ~/shared/sdd/svbox2025/.R/library/packages.tar.xz
 #  rm ~/shared/sdd/svbox2025/.R/library/packages.tar.xz
 #  cd -
@@ -1023,14 +1024,13 @@ Rscript -e "source('/home/jovyan/.config/R/BioDataScience.R')"
 # Student name as 'Firstname_Lastname' in case it cannot be guessed from the login.
 # - Create SDD_USER_2025 with no secret
 # Crypted string with the student identity and role copied from https://wp.sciviews.org/saturncloud_user_config.html?configure=1
+# - Go to manage > API Token and move the knob to have unscoped token (this is required to be able to shutdown the machine)
 #
 # Test the machine...
 #
 # Then in Manage -> Share Resource
 # Link is:
-# [![Run in Saturn Cloud](https://saturncloud.io/images/embed/run-in-saturn-cloud.svg)](https://app.community.saturnenterprise.io/dash/o/EcoNum/resources?templateId=a2f2607eec7a4b0c8b3adee7caa7471b)
-
-
+# [![Run in Saturn Cloud](https://saturncloud.io/images/embed/run-in-saturn-cloud.svg)](https://app.community.saturnenterprise.io/dash/o/EcoNum/resources?templateId=d4313ad62c2a436487e0c608b0eafabb)
 
 
 # Mac: There are 693 packages in sciviews-library, 1.61Gb on disk on arm64, 1.51Gb on x86_64
@@ -1041,9 +1041,9 @@ Rscript -e "source('/home/jovyan/.config/R/BioDataScience.R')"
 # but uses only one core -> tar first, then xz.
 #
 # For Mac silicon:
-#cd ~/Library/R/arm64/4.3
-#tar cvf sciviews-library2024_mac_arm64.tar sciviews-library
-#xz -z -9 -e -T0 -v sciviews-library2024_mac_arm64.tar
+#cd ~/Library/R/arm64/4.4
+#tar cvf sciviews-library2025_mac_arm64.tar sciviews-library
+#xz -z -9 -e -T0 -v sciviews-library2025_mac_arm64.tar
 # Once compressed, it makes 626Mb for _mac_arm64
 #
 # For Mac Intel:
