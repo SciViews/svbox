@@ -179,10 +179,12 @@ local({
         "    CRAN     = 'https://packagemanager.posit.co/cran/2025-04-10'))\n",
         "})\n\n", file = rprofile_ver, sep = "")
 
-      cat("rprofile_x.y <- paste0('", rprofile,
+      cat("local({\n",
+        "  rprofile_x.y <- paste0('", rprofile,
         "',\n  '_', sub('^([0-9]+\\\\.[0-9]+)\\\\..+$', '\\\\1', getRversion()))\n",
-        "if (file.exists(rprofile_x.y))\n",
-        "  source(rprofile_x.y)\n\n", file = rprofile, sep = "")
+        "  if (file.exists(rprofile_x.y))\n",
+        "    source(rprofile_x.y)\n",
+        "})\n\n", file = rprofile, sep = "")
     }
 
     # Final message...

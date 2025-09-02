@@ -1032,6 +1032,7 @@ Rscript -e "source('/home/jovyan/.config/R/BioDataScience.R')"
 # Link is:
 # [![Run in Saturn Cloud](https://saturncloud.io/images/embed/run-in-saturn-cloud.svg)](https://app.community.saturnenterprise.io/dash/o/EcoNum/resources?templateId=d4313ad62c2a436487e0c608b0eafabb)
 
+# The svbox2025 resource in sddinstall is https://app.community.saturnenterprise.io/dash/o/EcoNum/resources?templateId=fd31a6f3d75e4ee7b2ceb61c2bbcdee0
 
 # Mac: There are 693 packages in sciviews-library, 1.61Gb on disk on arm64, 1.51Gb on x86_64
 # Windows: There are 690 packages in C:/Users/<username>/AppData/Local/R/win-library/4.3, 1.70Gb on disk
