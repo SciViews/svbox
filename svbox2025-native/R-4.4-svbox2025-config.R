@@ -442,7 +442,7 @@ print(cip_error) # I got satellite and raster, but when restarting R, it works
 #cd C:/Users/phgro/AppData/Local/R/sciviews-library
 #tar cvf sciviews-library2025_win_x86_64.tar 4.4
 #xz -z -9 -e -T0 -v sciviews-library2024_win_x86_64.tar
-# Once compressed, it makes 684Mb for _win_x86_64
+# Once compressed, it makes 804Mb for _win_x86_64
 
 ################################################################################
 # Optional stuff:
