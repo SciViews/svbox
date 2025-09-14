@@ -1516,3 +1516,320 @@ Then, chmod a+x /home/jovyan/shared/sdd/svbox2025/.start_script and put just thi
 
 Then, test it and recollect the recipe (Manage > Download Recip > for clone(YAML)
 
+
+## svbox2025fr
+
+Sam config as previous one, but no R_LIBS env var, 10Gi disk, no secrete and no shared folder.
+This is the start script:
+
+```
+if [[ $LANG != en* ]]; then
+echo "Adding locale $LANG..."
+sudo locale-gen $LANG
+sudo update-locale
+fi
+
+echo "Writing config file ${R_HOME}/etc/Rprofile.site..."
+cat >tmp.site <<EOL
+options(repos = c(
+  SciViews = 'https://sciviews.r-universe.dev',
+  CRAN     = 'https://packagemanager.posit.co/cran/__linux__/jammy/2025-04-10'))
+# Set user-agent from https://docs.rstudio.com/rspm/1.1.2/admin/binaries.html
+options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(
+  getRversion(), R.version$platform, R.version$arch, R.version$os)))
+# Make sure there is no working-dir.sh file in /etc/profile.d
+try(system("sudo rm -f /etc/profile.d/working-dir.sh"), silent = TRUE)
+# Make sure the personal lib, then the SciViews lib are on .libPaths()
+.libPaths(c("/home/jovyan/R/x86_64-pc-linux-gnu-library/4.4",
+  "/usr/local/lib/R/sciviews-library"))
+
+# The temp environment
+.temp_env <- (function() {
+  pos <- match("SciViews:TempEnv", search())
+  if (is.na(pos)) {
+    tmp <- list()
+    attach_env <- function(...) get("attach", mode = "function")(...)
+    attach_env(tmp, name = "SciViews:TempEnv", pos = length(search()) - 1L)
+    rm(tmp)
+    pos <- match("SciViews:TempEnv", search())
+  }
+  pos.to.env(pos)
+})()
+
+# Install an activity tracker to stop the SaturnCloud machine after a timeout
+assign('saturn_timeout', function(timeout_min = NULL, verbose = TRUE) {
+  if (!missing(timeout_min)) {
+    stopifnot(is.numeric(timeout_min), length(timeout_min) == 1)
+    timeout_min <- as.integer(timeout_min)
+    writeLines(as.character(timeout_min), "/home/jovyan/.timeout")
+  } else {# Get current value
+    timeout_min <- readLines("/home/jovyan/.timeout")[1]
+    timeout_min <- try(as.numeric(timeout_min), silent = TRUE)
+    if (inherits(timeout_min, "try-error")) {
+      # Use default value
+      timeout_min <- Sys.getenv("TIMEOUT", unset = "60")
+      timeout_min <- try(as.numeric(timeout_min), silent = TRUE)
+      if (inherits(timeout_min, "try-error")) {
+        Sys.setenv(TIMEOUT = "60")
+        timeout_min <- 60
+      }
+      # Since the timeout was wrong, we reset it
+      writeLines(as.character(timeout_min), "/home/jovyan/.timeout")
+    }
+  }
+  # Set the time out
+  if (isTRUE(verbose)) {
+    msg <- paste("SaturnCloud time out is now", timeout_min, "minutes.")
+    timeout_def <- Sys.getenv("TIMEOUT", unset = "60")
+    timeout_def <- try(as.numeric(timeout_def), silent = TRUE)
+    if (inherits(timeout_def, "try-error"))
+      timeout_def <- 60
+    if (timeout_min < timeout_def)
+      msg <- paste(msg, "It will be reset to", timeout_def,
+        "minutes next time.")
+    message(msg)
+  }
+  fs::file_touch("/home/jovyan/.timeout", Sys.time() + timeout_min * 60)
+  invisible(timeout_min)
+}, envir = .temp_env)
+saturn_timeout(verbose = FALSE)
+
+assign('.set_prompt', function(expr, value, succeeded, visible) {
+  timeout_min <- saturn_timeout(verbose = FALSE)
+  timeout_def <- Sys.getenv("TIMEOUT", unset = "60")
+  timeout_def <- try(as.numeric(timeout_def), silent = TRUE)
+  if (inherits(timeout_def, "try-error")) {
+    Sys.setenv(TIMEOUT = "60")
+    timeout_def <- 60
+  }
+  # Only display timeout if it differs from the default
+  if (timeout_min == timeout_def) {
+    timeout_msg <- ""
+  } else {
+    timeout_msg <- paste0("[", timeout_min, "min] ")
+  }
+  branch <- try(gert::git_branch(), silent = TRUE)
+  if (inherits(branch, "try-error")) {
+    # Either not a git repo or gert is not installed (2nd is unlikely)
+    options(prompt = paste0(timeout_msg, "> "))
+  } else {
+    to_commit <- NROW(gert::git_status()) != 0
+    if (to_commit) {
+      options(prompt = paste0(timeout_msg, branch, "* > "))
+    } else {
+      options(prompt = paste0(timeout_msg, branch, " > "))
+    }
+  }
+  # Make sure timeouts <= timeout_def are transients
+  if (timeout_min < timeout_def) {
+    writeLines(as.character(timeout_def), "/home/jovyan/.timeout")
+    fs::file_touch("/home/jovyan/.timeout", Sys.time() + timeout_min * 60)
+  }
+  TRUE
+}, envir = .temp_env)
+invisible(addTaskCallback(.set_prompt, name = "saturn_track_activity"))
+# Change the prompt right now
+invisible(.set_prompt())
+
+# Reset timeout on activity, that is: save a file or knit a document
+later::later(function() {
+  if (rstudioapi::isAvailable() &&
+      !exists('.handle_saveSourceDoc', envir = .temp_env, inherits = FALSE)) {
+    assign('.handle_saveSourceDoc',
+      rstudioapi::registerCommandCallback("saveSourceDoc",
+        function() saturn_timeout(verbose = FALSE)),
+      envir = .temp_env)
+  }
+}, 5)
+
+later::later(function() {
+  if (rstudioapi::isAvailable() &&
+      !exists('.handle_knitDocument', envir = .temp_env, inherits = FALSE)) {
+    assign('.handle_knitDocument',
+      rstudioapi::registerCommandCallback("knitDocument",
+        function() saturn_timeout(verbose = FALSE)),
+      envir = .temp_env)
+  }
+}, 5)
+
+# Check the currently edited document
+# If it is outside the repo & not in a BioDataScience-Course project -> nag
+# otherwise (outside only) display a one time message
+assign('.test_doc', function() {
+  if (!rstudioapi::isAvailable())
+    return()
+  # Check if timeout is close (note, display warning only once)
+  timeout <- file.mtime("/home/jovyan/.timeout")
+  cur_time_5min <- Sys.time() + 5 * 60
+  will_stop_5min <- try(cur_time_5min > timeout - 5 &&
+      cur_time_5min <= timeout + 5, silent = TRUE)
+  if (isTRUE(will_stop_5min)) {
+    rstudioapi::showDialog("Machine consid\u00e9r\u00e9e inactive",
+      paste0("<b>Attention:</b> sans r\u00e9action de votre part, la machine ",
+        "va bient\u00f4t s'\u00e9teindre automatiquement. Souhaitez-vous ",
+        "la maintenir active <i>(cliquez OK) ?</i>"))
+    saturn_timeout(verbose = FALSE)
+  }
+
+  later::later(.test_doc, 10)
+  return()
+})
+
+# Function to kill the virtual machine from within R
+assign('.saturn_cloud_shutdown', function() {
+  message("Shutting down the SaturnCloud machine (you have to restart it to continue using it)...")
+  saturn_timeout(0, verbose = FALSE)
+}, envir = .temp_env)
+# Hook it up to quitSession
+later::later(function() {
+  if (rstudioapi::isAvailable() &&
+      !exists('.handle_quitSession', envir = .temp_env, inherits = FALSE)) {
+    assign('.handle_quitSession',
+      rstudioapi::registerCommandCallback("quitSession", .saturn_cloud_shutdown),
+      envir = .temp_env)
+  }
+}, 5)
+
+# Do we want R in another language?
+if (Sys.getenv("LANG", unset = "en") != "en")
+  try(Sys.setLanguage(Sys.getenv("LANG")), silent = TRUE)
+
+# Keep a permanent track of our temporary environment... in itself
+.temp_env$.temp_env <- .temp_env
+rm(.temp_env)
+EOL
+
+R_HOME=$(Rscript --vanilla -e "cat(Sys.getenv('R_HOME'))")
+RPROFILE_LOCATION=${R_HOME}/etc/Rprofile.site
+sudo mv tmp.site ${RPROFILE_LOCATION}
+sudo rm -f /etc/R/Rprofile.site
+
+echo "Configuring git (pull rebase -> false)..."
+# TODO: set email from EMAIL if provided?
+git config --global pull.rebase false
+
+echo "Installing SciViews and user libraries for R..."
+mkdir -p /home/jovyan/R/x86_64-pc-linux-gnu-library/4.4
+sudo mkdir -p /usr/local/lib/R/sciviews-library
+sudo chown -R jovyan:jovyan /usr/local/lib/R/sciviews-library
+if [ ! -d ~/shared/sdd/svbox2025/.R/library/4.4 ]; then
+  echo "Downloading and installing R packages for SciViews..."
+  mkdir -p ~/shared/sdd/svbox2025/.R/library
+  cd ~/shared/sdd/svbox2025/.R/library
+  curl -o ~/shared/sdd/svbox2025/.R/library/packages.tar.xz "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/sciviews-library2025_saturn.tar.xz"
+  tar -xf ~/shared/sdd/svbox2025/.R/library/packages.tar.xz
+  rm ~/shared/sdd/svbox2025/.R/library/packages.tar.xz
+  cd -
+fi
+echo "Linking R packages for SciViews..."
+if [ -d ~/shared/sdd/svbox2025/.R/library/4.4 ]; then
+sudo ln -s /home/jovyan/shared/sdd/svbox2025/.R/library/4.4/* /usr/local/lib/R/sciviews-library
+fi
+
+echo "Configuring RStudio..."
+if [ ! -f /home/jovyan/.config/rstudio/dictionaries/languages-system/fr_FR.dic ]; then
+mkdir -p /home/jovyan/.config/rstudio/dictionaries/languages-system
+cd /home/jovyan/.config/rstudio/dictionaries/languages-system
+curl -o fr_dic.tar.gz "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/fr_dic.tar.gz"
+tar xf fr_dic.tar.gz
+rm -rf ._* # Just in case there are such files... (e.g., when compressed in macOS)
+  rm fr_dic.tar.gz
+cd -
+  fi
+if [ ! -f /home/jovyan/.config/rstudio/snippets/r.snippets ]; then
+mkdir -p /home/jovyan/.config/rstudio/snippets
+if [[ $LANG = fr* ]]; then
+curl -o /home/jovyan/.config/rstudio/rstudio-prefs.json "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/rstudio-prefs-fr.json"
+else
+  curl -o /home/jovyan/.config/rstudio/rstudio-prefs.json "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/rstudio-prefs.json"
+fi
+curl -o /home/jovyan/.config/rstudio/snippets/r.snippets "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/r.snippets"
+fi
+# Make extra fonts available to RStudio
+sudo ln -s /usr/share/fonts/truetype/firacode /etc/rstudio/fonts/FiraCode
+export SDD_PASSWORD_2025=$(Rscript -e "cat(learnitdown::encrypt(Sys.getenv('SDD_PASSWORD_2025'), Sys.getenv('SATURN_TOKEN'), base64 = TRUE, url.encode = TRUE))")
+
+echo "Installing tinytex files..."
+if [ ! -d /home/jovyan/.TinyTeX ]; then
+if [ -f /home/jovyan/shared/sdd/svbox2025/.config/tinytex.tar.gz ]; then
+cp /home/jovyan/shared/sdd/svbox2025/.config/tinytex.tar.gz /home/jovyan/tinytex.tar.gz
+else
+  curl -o /home/jovyan/tinytex.tar.gz "https://filedn.com/lzGVgfOGxb6mHFQcRn9ueUb/svbox2025/files/tinytex.tar.gz"
+fi
+cd /home/jovyan
+tar xf tinytex.tar.gz
+rm tinytex.tar.gz
+mkdir -p /home/jovyan/.local/bin
+ln -sf /home/jovyan/.TinyTeX/bin/x86_64-linux/* /home/jovyan/.local/bin
+cd -
+  fi
+
+echo "Installing an activity timeout checker..."
+[ -n "$TIMEOUT" ] || export TIMEOUT=60
+echo "$TIMEOUT" > /home/jovyan/.timeout
+if [ ! -f /etc/profile.d/sciviews.sh ]; then
+cat >tmp.sh <<EOL
+function saturn_timeout() {
+  if [ -z "\$1" ]; then
+  # No new timeout provided
+  timeout_min=\$(cat /home/jovyan/.timeout)
+  else
+    # A new number is provided
+    if [[ \$1 =~ ^[0-9]+\$ ]]; then
+  timeout_min=\$1
+  echo "\$1" > /home/jovyan/.timeout
+  else
+    echo "Error: timeout is not a nul or positive integer"
+  return 1
+  fi
+  fi
+  echo "SaturnCloud time out is now \${timeout_min} minutes."
+  touch /home/jovyan/.timeout -d"\${timeout_min}min"
+}
+export -f saturn_timeout
+
+PROMPT_COMMAND='touch /home/jovyan/.timeout -d"+\$(cat /home/jovyan/.timeout)min" &>/dev/null;echo -ne "\033]0;\${PWD/#\${HOME}/~} - \${SATURN_USER}@\${SATURN_PROJECT_NAME}\007\e[0;35m"'
+PS0='\$(touch /home/jovyan/.timeout -d"+\$(cat /home/jovyan/.timeout)min" &>/dev/null)\e[0m'
+PS1='[\$(cat /home/jovyan/.timeout)min]\
+\$(git branch &>/dev/null; if [ \$? -eq 0 ]; then \
+echo " \$(git branch | grep ^* | sed s/\*\ //)\
+\$(echo \`git status\` | grep "nothing to commit" > /dev/null 2>&1; if [ "\$?" -ne "0" ]; then \
+echo "* \\\$ "; else echo " \\\$ "; fi)"; else echo " \\\$ "; fi)'
+touch /home/jovyan/.timeout -d"+\$(cat /home/jovyan/.timeout)min" &>/dev/null
+echo -ne "\033]0;\${PWD/#${HOME}/~} - \${SATURN_USER}@\${SATURN_PROJECT_NAME}\007\e[0;35m"
+EOL
+
+# Note unreadable for the Vibrant Ink and Idle Fingers RStudio themes
+# but OK for the other themes
+sudo mv tmp.sh /etc/profile.d/sciviews.sh
+fi
+# Also inactivate the forcing to workspace as initial dir
+#if [ -f /etc/profile.d/working-dir.sh ]; then
+sudo rm -f /etc/profile.d/working-dir.sh
+#sudo touch /etc/profile.d/working-dir.sh
+#fi
+
+cat >tmp.sh <<EOL
+#!/bin/sh
+
+[ -n "\$TIMEOUT" ] || export TIMEOUT=60
+
+while sleep 1m; do
+if [ ! -f /home/jovyan/.timeout ]; then
+echo "\$TIMEOUT" > /home/jovyan/.timeout
+touch /home/jovyan/.timeout -d"\$TIMEOUT+min"
+fi
+touch /home/jovyan/.timeout_check
+if [ /home/jovyan/.timeout -ot /home/jovyan/.timeout_check ]; then
+echo "Closing the machine with $BASE_URL/api/jupyter_servers/$(echo $HOSTNAME | awk -F'-' '{print $4}')/stop"
+curl -s -X POST -H "Authorization: token $SATURN_TOKEN" "$BASE_URL/api/jupyter_servers/$(echo $HOSTNAME | awk -F'-' '{print $4}')/stop"
+fi
+done
+EOL
+
+sudo mv tmp.sh /home/jovyan/.local/bin/check_timeout
+sudo chmod +x /home/jovyan/.local/bin/check_timeout
+/home/jovyan/.local/bin/check_timeout &
+```
+
+Test and create the recipe (clone (YAML)).
