@@ -400,6 +400,8 @@ install.packages("kit", type = "source")
 library(kit)
 install.packages("fstcore", type = "source")
 library(fstcore)
+# Make sure we have version 0.2.2 of equatags
+remotes::install_github("ardata-fr/equatags@462e77b")
 
 # Restore options
 options(repos = orepos)
