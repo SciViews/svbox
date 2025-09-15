@@ -55,7 +55,7 @@ install.packages("gert") # Requires brew install libgit2
 install.packages("textshaping") # Requires brew install harfbuzz fribidi
 install.packages("ggiraph") # Requires brew install libpng, needs a Makevars file!
 install.packages("svglite") # Requires brew install libpng
-install.packages("gdtools") # Could not compile correctly, despite reinstalling brew deps
+install.packages("gdtools") # Could not compile correctly on arm64 (but OK on Mac x86_64) despite reinstalling brew deps
 install.packages("~/pCloud\ Drive/Public\ Folder/svbox2025/files/gdtools_0.4.2_R4.4arm64.tgz", repos = NULL)
 # or download it and...
 #install.packages("~/Downloads/gdtools_0.4.2_R4.4arm64.tgz", repos = NULL)
@@ -70,7 +70,7 @@ Sys.setenv(XML_CONFIG = "/opt/homebrew/Cellar/libxml2/2.13.8/bin/xml2-config")
 install.packages("XML", type = "source") # Need libxml2-dev installed
 # Then, one can install tmap and tmaptools
 install.packages(c("tmap", "tmaptools"))
-# suppdata is now archived and taken ou of svbox2025
+# suppdata is now archived and taken out of svbox2025
 install.packages(c("anytime", "ape", "assert", "assertthat", "automap",
   "available", "backports", "base64enc", "base64url", "bench", "bit", "bit64",
   "blastula", "blob", "bookdown", "boot", "broom", "broom.mixed", "butcher",
@@ -176,20 +176,21 @@ install.packages(c("S7", "usethis", "rlang", "groundhog", #"equatags",
   Ncpus = Ncpus)
 
 # More items for 2023 (note: littler and unix not available for Windows):
+install.packages("littler") # Need brew install libdeflate on Mac Intel
 install.packages(c("aws.s3", "aws.signature", "babynames", "bdsmatrix",
   "colourpicker", "cols4all", "colorblindcheck", "compareGroups", "coop",
   "docopt", "downloader", "dtts", "equatags", "fasttime", "finalfit",
   "flashlight", "forge", "fst", "ggdark", "ggforce", "ggmap", "ggpath",
   "ggtext", "ggThemeAssist", "ghapps", "groundhog", "kit", "languageserver",
-  "littler", "octopus", "optimx", "parallelDist", "parsermd", "qs", "quartets",
+  "octopus", "optimx", "parallelDist", "parsermd", "qs", "quartets",
   "r2d3", "RCurl", "RgoogleMaps", "roll", "rrapply", "santoku",
   "shinyDatetimePickers", "shinyFeedback", "shinytest2", "shinythemes", "spdl",
   "tiff", "tsbox", "unix"),
   Ncpus = Ncpus)
 
-# On Mac Intel, I got errors to compile parallelDist and roll because of missing gfortran!
+# On Mac Intel, I got errors to compile littler
 # I had to install gfortran-14.2-universal.pkg from CRAN -> MacOS -> tools
-# On Windows, i also got en error to install parallelDist. I had to install rtools44
+# On Windows, I also got en error to install parallelDist. I had to install rtools44
 
 # More packages
 tinytex::install_tinytex() # Cancel if a LaTeX distribution already exists
@@ -202,12 +203,14 @@ install.packages("polarssql", repos = c("https://rpolars.r-universe.dev", getOpt
 install.packages("tidypolars", repos = c("https://etiennebacher.r-universe.dev", getOption("repos")))
 
 # More items for 2024:
+install.packages("git2r") # Need libgit2 >= 1.0, openssl & libssh2 -> brew install libgit2
+install.packages("xgboost")
 install.packages(c("atime", "connectapi", "correctR", "correlationfunnel", "cv",
   "dqrng",  "downlit", "duckdbfs", "duckplyr", "fixest", "ggeffects", "ggpmisc",
   "ggpp", "ggraph", "ggspatial", "GLMsData", "httr2", "lterdatasampler",
   "modeldata", "modeldatatoo", "poorman", "reactable", "reactable.extras",
   "searcher", #"see" No, because too many dependencies!
-  "servr", "table1", "this.path", "tidyfast", "tinytable", "xgboost"),
+  "servr", "table1", "this.path", "tidyfast", "tinytable"),
   Ncpus = Ncpus)
 
 # New in svbox2025:
@@ -382,7 +385,10 @@ install.packages(c("ggcheck", "learnitdown", "learnitgrid",
   "learnitprogress", "learnitdashboard"), repos =
     c(learnitr = "https://learnitr.r-universe.dev", CRAN = repos["CRAN"]))
 
-# Temporary updates:
+# OpenMP support:
+# Need to do this (see ):
+#curl -O https://mac.r-project.org/openmp/openmp-17.0.6-darwin20-Release.tar.gz
+#sudo tar fvxz openmp-17.0.6-darwin20-Release.tar.gz -C /
 install.packages("data.table", type = "source")
 library(data.table)
 Sys.setLanguage("en") # Otherwise, tests fail in another language!
@@ -419,7 +425,7 @@ for (cipak in na.omit(cip$Package)) {
 }
 print(cip_error) # I got satellite and raster, but when restarting R, it works
 
-# Mac: There are 759 packages in sciviews-library, 1.95Gb on disk on arm64, 1.51Gb on x86_64
+# Mac: There are 759 packages in sciviews-library, 1.95Gb on disk on arm64, 1.95Gb on x86_64
 # Windows: There are 690 packages in C:/Users/<username>/AppData/Local/R/win-library/4.4, 1.70Gb on disk
 
 # Once it is done, rename library into sciviews-library and do:
@@ -435,13 +441,13 @@ print(cip_error) # I got satellite and raster, but when restarting R, it works
 # For Mac Intel:
 # cd ~/Library/R/x86_64/4.4 or
 #tar cvf sciviews-library2025_mac_x86_64.tar sciviews-library
-#xz -z -9 -e -T0 -v sciviews-library2024_mac_x86_64.tar
-# Once compressed, it makes 671Mb for _mac_x86_64
+#xz -z -9 -e -T0 -v sciviews-library2025_mac_x86_64.tar
+# Once compressed, it makes 785Mb for _mac_x86_64
 #
 # For Windows Intel
 #cd C:/Users/phgro/AppData/Local/R/sciviews-library
 #tar cvf sciviews-library2025_win_x86_64.tar 4.4
-#xz -z -9 -e -T0 -v sciviews-library2024_win_x86_64.tar
+#xz -z -9 -e -T0 -v sciviews-library2025_win_x86_64.tar
 # Once compressed, it makes 804Mb for _win_x86_64
 
 ################################################################################
