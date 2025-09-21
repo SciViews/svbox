@@ -286,15 +286,19 @@ local({
           "# Your code here under...\n", file = rprofile_x.y_classic, sep = "")
         file.append(rprofile_x.y_classic, rprofile)
         unlink(rprofile)
-      } else {# Create an empty rptofile_x.y_classic file with instructions
-        cat(
-          "# Your classic R configuration\n",
-          "# You can edit this file to restore your classic R environment\n",
-          "# when you set the environment variable R_MODE to 'classic'\n",
-          "# in your operating system (e.g. in .Renviron file)\n",
-          "# Your code here under...\n", file = rprofile_x.y_classic, sep = "")
       }
     }
+
+    if (!file.exists(rprofile_x.y_classic)) {
+      # Create an empty rprofile_x.y_classic file with instructions
+      cat(
+        "# Your classic R configuration\n",
+        "# You can edit this file to restore your classic R environment\n",
+        "# when you set the environment variable R_MODE to 'classic'\n",
+        "# in your operating system (e.g. in .Renviron file)\n",
+        "# Your code here under...\n", file = rprofile_x.y_classic, sep = "")
+    }
+
     message("- Writing the SciViews Box 2025 configuration to '", rprofile, "'")
     cat(
       "# Mode-specific code, do not edit!\n",
