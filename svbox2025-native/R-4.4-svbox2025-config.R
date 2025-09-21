@@ -468,3 +468,30 @@ remotes::install_github(c(
   'BioDataScience-Course/BioDataScience3@v2025.0.0'
 ), upgrade = 'always')
 
+################################################################################
+# Building a patch file in R:
+patch_date <- "2025-09-20"
+if (.Platform$OS.type == "windows") {
+  os <- "win_x86_64"
+  patch_dir <- "~/svpatch/4.4"
+} else if (grepl("darwin", R.version$os)) {# macOS
+  if (R.version$arch == "aarch64") {
+    os <- "mac_arm64"
+  } else {
+    os <- "mac_x86_64"
+  }
+  patch_dir <- "~/svpatch/sciviews-library"
+}
+dir.create(patch_dir, recursive = TRUE)
+.libPaths(c(patch_dir, .libPaths()))
+# Install what need to be patched
+remotes::install_github("datalorax/equatiomatic@572a8e9", force = TRUE)
+odir <- setwd(dirname(patch_dir))
+patch_file <- paste0("sciviews-library2025_", os, "_", patch_date, ".tar.xz")
+tar(patch_file, basename(patch_dir), compression = "xz", compression_level = 9)
+# Calculate file size + md5 and place these values in the install script
+file.size(patch_file)
+tools::md5sum(patch_file)
+# Reset the system
+setwd(odir)
+.libPaths(.libPaths()[-1])

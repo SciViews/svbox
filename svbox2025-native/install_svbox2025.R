@@ -5,10 +5,28 @@ local({
   .install_svbox2025 <- function(
       allusers = as.logical(Sys.getenv("SVBOX_ALLUSERS", TRUE)),
       delete.xzfile = as.logical(Sys.getenv("SVBOX_DELETE_XZFILE", TRUE)),
+      delete.userlib = as.logical(Sys.getenv("SVBOX_DELETE_USERLIB", NA)),
       include.site.library =
         as.logical(Sys.getenv("SVBOX_INCLUDE_SITE_LIBRARY", FALSE))) {
 
-    message("=== Installing the SciViews Box 2025...===")
+    message("=== SciViews Box 2025 Installation (v. 1.0.0) ===")
+
+    # NULL, or the data of last patch
+    # Reset also patch_size and patch_md5 further in this script for a new patch
+    patch_date <- "2025-09-20"
+
+    rprofile_comment <- c(
+      "# Your classic R configuration",
+      "# You can edit this file to restore your classic R environment",
+      "# when you set the environment variable R_MODE to 'classic'",
+      "# in your operating system (e.g. in .Renviron file)",
+      "# Your code here under..."
+    )
+
+    # We need longer timout for file downloads
+    otimeout <- getOption("timeout")
+    on.exit(options(timeout = otimeout), add = TRUE)
+    options(timeout = max(900, otimeout))
 
     # Check that R is version 4.4.x
     r_version <- getRversion()
@@ -45,6 +63,8 @@ local({
       os <- "win_x86_64"
       lib_size <- 842964600
       lib_md5 <- "73ab4878025f93722c73ccbd4db020fc"
+      patch_size <- 774012
+      patch_md5 <- "231f1e4b8d977eadfaea9c254d8f4d56"
       sv_lib <- NA
       if (isTRUE(allusers)) {# Try to install the library for all users
         sv_lib <- file.path(Sys.getenv("PROGRAMDATA"),
@@ -81,6 +101,8 @@ local({
         os <- "mac_arm64"
         lib_size <- 775628796
         lib_md5 <- "ebdb403ebc7979a89957f98da60168a8"
+        patch_size <- 774012
+        patch_md5 <- "231f1e4b8d977eadfaea9c254d8f4d56"
         if (isTRUE(allusers)) {
           sv_lib <- paste0("/Library/Frameworks/R.framework/Versions/",
             "4.4-arm64/Resources/sciviews-library")
@@ -103,6 +125,8 @@ local({
         os <- "mac_x86_64"
         lib_size <- 784864284
         lib_md5 <- "b43a845d49e16ffad34371e522fcad55"
+        patch_size <- 774012
+        patch_md5 <- "231f1e4b8d977eadfaea9c254d8f4d56"
         if (isTRUE(allusers)) {
           sv_lib <- paste0("/Library/Frameworks/R.framework/Versions/",
             "4.4-x86_64/Resources/sciviews-library")
@@ -132,16 +156,100 @@ local({
     if (!dir.exists(dirname(sv_lib))) {
       stop("Cannot create the SciViews Box 2025 library '", sv_lib, "'")
     } else {
-      message("- SciViews Box 2025 library is '", sv_lib, "'")
+      message("- The SciViews Box 2025 library is '", sv_lib, "'")
     }
     if (!dir.exists(user_lib)) {
       stop("Cannot create the SciViews Box 2025 user library '", user_lib, "'")
     } else {
-      message("- SciViews Box 2025 user library is '", user_lib, "'")
+      message("- The SciViews Box 2025 user library is '", user_lib, "'")
     }
 
-    # Check the SciViews Box 2025 library exists or download and uncompress it
-    if (!file.exists(file.path(sv_lib, "SciViews", "DESCRIPTION"))) {
+    # Temporary switch to the sciviews library directory
+    odir <- setwd(dirname(sv_lib))
+    on.exit(setwd(odir))
+
+    # Check the SciViews Box 2025 library exists or install it
+    if (file.exists(file.path(sv_lib, "SciViews", "DESCRIPTION"))) {
+      # It seems the SciViews Box is already installed
+      # Offer to patch it or uninstall it
+
+      cat("The SciViews Box 2025 is already installed on your machine.\n")
+      if (is.null(patch_date)) {
+        svmenu <- c(
+          "update it (you already have lastest version).",
+          "uninstall it completely."
+        )
+      } else {
+        svmenu <- c(
+          paste0("update it with the last patch (", patch_date, ")."),
+          "uninstall it completely."
+        )
+      }
+      sel <- utils::menu(svmenu, graphics = FALSE,
+        title = "Do you want to... (type 0 to cancel)")
+
+      if (sel == 1) {# Update
+        message("- Updating the SciViews Box 2025 library...")
+        # Just let the installation proceed, it will apply the last patch
+
+      } else if (sel == 2) {# Uninstall the SciViews Box
+        unlink(sv_lib, recursive = TRUE)
+        if (!is.na(sv_alt_lib))
+          unlink(sv_alt_lib, recursive = TRUE)
+        message("- The SciViews Box 2025 library has been removed.")
+        # Ask for removing also the svuser-library
+        if (is.na(delete.userlib) && interactive()) {
+          delete_user_lib <- utils::askYesNo(
+            prompts = gettext(c("Yes", "No", "Cancel")),
+            "Do you want to delete the SciViews Box 2025 user library too?")
+        } else {
+          delete_user_lib <- isTRUE(delete.userlib) # If NA -> FALSE
+        }
+        if (delete_user_lib) {
+          unlink(user_lib, recursive = TRUE)
+          message("- The SciViews Box 2025 user library has been removed.")
+        } else {
+          message("- The SciViews Box 2025 user library is not removed (",
+            user_lib, ").")
+        }
+
+        # Reset the .Rprofile file
+        rprofile <- file.path(Sys.getenv("HOME"), ".Rprofile")
+        rprofile <- gsub("\\\\", "/", rprofile)
+        version_x.y <- sub('^([0-9]+\\.[0-9]+)\\..+$', '\\1', getRversion())
+        rprofile_x.y_sciviews <- paste0(rprofile, "_", version_x.y, "_sciviews")
+        rprofile_x.y_classic <- paste0(rprofile, "_", version_x.y, "_classic")
+        # rprofile is eliminated
+        unlink(rprofile)
+        # rprofile_x.y_classic becomes rprofile, if it exists
+        if (file.exists(rprofile_x.y_classic)) {
+          # Eliminate the comments placed at the beginning of the file
+          rpc <- readLines(rprofile_x.y_classic)
+          rpc <- rpc[!rpc %in% rprofile_comment]
+          if (length(rpc)) {
+            writeLines(rpc, rprofile)
+            message("- Your classic R configuration has been restored from '",
+              rprofile_x.y_classic, "' to your .Rprofile file.")
+          }
+          unlink(rprofile_x.y_classic)
+        }
+        # rprofile_x.y_sciviews is saved as .Rprofile.bak
+        if (file.exists(rprofile_x.y_sciviews)) {
+          rprofile_bak <- paste0(rprofile, ".bak")
+          unlink(rprofile_bak)
+          file.rename(rprofile_x.y_sciviews, rprofile_bak)
+          message("- The SciViews Box 2025 configuration has been saved to '",
+            rprofile_bak, "'")
+        }
+        cat("Restart R now to recover your initial configuration completely.\n")
+        return(invisible(TRUE))
+
+      } else {# sel == 0 probably, just exit
+        message("- Operation cancelled")
+        return(invisible(FALSE))
+      }
+
+    } else {# The SciViews library does not exists, install it...
       # Check disk space available (at least 4 GB)
       if (.Platform$OS.type == "windows") {
         avail <- system(paste0("wmic logicaldisk '",
@@ -156,10 +264,6 @@ local({
       if (as.numeric(avail) < 4)
         stop("At least 4 GB of disk space are required to install the ",
           "SciViews Box 2025 library. Please, free space on the system disk.")
-
-      # Temporary switch to the sciviews library directory
-      odir <- setwd(dirname(sv_lib))
-      on.exit(setwd(odir))
 
       # Download the SciViews Box 2025 library
       url <- paste0(
@@ -180,9 +284,6 @@ local({
 
       if (!file.exists(dest)) {
         message("- Downloading the SciViews Box 2025 library, please wait...")
-        otimeout <- getOption("timeout")
-        on.exit(options(timeout = otimeout), add = TRUE)
-        options(timeout = max(900, otimeout))
         utils::download.file(url, dest, quiet = FALSE, mode = "wb",
           cacheOK = FALSE)
       }
@@ -198,7 +299,9 @@ local({
       }
 
       # Uncompress it
-      message("- Uncompressing the SciViews Box 2025 library, be patient...")
+      message(
+        "- Uncompressing the SciViews Box 2025 library, please be patient:\n",
+        "  this can take several minutes and nothing is printed...")
       # Timing of this operation as a rough estimate of processing power
       # and if it takes longer than a given value, warn the user that its
       # computer is probably too slow to run the SciViews Box 2025
@@ -238,8 +341,53 @@ local({
       }
     }
 
+    # Possibly install a patch
+    if (!is.null(patch_date)) {
+      patch_file <- paste0(
+        "sciviews-library2025_", os, "_", patch_date, ".tar.xz")
+      patch_url <- paste0(
+        "https://wp.sciviews.org/svbox2025/files/", patch_file)
+
+      if (file.exists(patch_file))
+        unlink(patch_file) # We redownload it: if user asks, there may be reason
+      message("- Downloading the SciViews Box 2025 patch, please wait...")
+      utils::download.file(patch_url, patch_file, quiet = FALSE, mode = "wb",
+        cacheOK = FALSE)
+      # Check
+      patch_ok <- TRUE
+      if (!file.exists(patch_file)) {
+        message(
+          "  Cannot download the SciViews Box 2025 patch from ", patch_url)
+        patch_ok <- FALSE
+      } else if (file.size(patch_file) != patch_size) {
+        message("  Downloaded file '", file.path(getwd(), patch_file),
+          "' is corrupted (wrong size). ",
+          "Please, relaunch the installation.")
+        patch_ok <- FALSE
+      } else if (tools::md5sum(patch_file) != patch_md5) {
+        message("  Downloaded file '", file.path(getwd(), patch_file),
+          "' is corrupted (wrong checksum). ",
+          "Please, relaunch the installation.")
+        patch_ok <- FALSE
+      }
+
+      if (patch_ok) {
+        # Uncompress it
+        message(
+          "- Uncompressing the SciViews Box 2025 patch, please be patient...")
+        res <- try(utils::untar(patch_file), silent = TRUE)
+        if (inherits(res, "try-error")) {
+          stop("Error when uncompressing the SciViews Box 2025 patch: ", res)
+        }
+        message("- The SciViews Box 2025 is patched now (", patch_date, ").")
+      }
+      # Do not leave the patch file behind
+      unlink(patch_file)
+    }
+
     # Switch .libPaths()
-    message("- Switching to the SciViews Box 2025 library... see .libPaths()")
+    message("- Switching now to the SciViews Box 2025 library/user library... ",
+      "see .libPaths()")
     old_libPaths <- .libPaths()
     if (isTRUE(include.site.library)) {
       .libPaths(c(user_lib, sv_lib, .Library))
@@ -248,7 +396,7 @@ local({
     }
 
     # Change repos
-    message("- Switching packages repositories to SciViews and ",
+    message("- Switching repositories to SciViews R-Universe and ",
       "CRAN on 2025-04-10 (repos option)")
     orepos <- getOption("repos")
     options(repos = c(
@@ -278,6 +426,10 @@ local({
       } else {# Place old .Rprofile code in rprofile_x.y._classic
         message("- Backing up your current .Rprofile file to '",
           rprofile_x.y_classic, "'")
+        message(
+          "  Note: your startup code is not copied into the SciViews\n",
+          "  config file '", rprofile_x.y_sciviews, "'\n",
+          "  you should edit it manually if needed...")
         cat(
           "# Your classic R configuration\n",
           "# You can edit this file to restore your classic R environment\n",
@@ -299,7 +451,6 @@ local({
         "# Your code here under...\n", file = rprofile_x.y_classic, sep = "")
     }
 
-    message("- Writing the SciViews Box 2025 configuration to '", rprofile, "'")
     cat(
       "# Mode-specific code, do not edit!\n",
       "# Edit the .Rprofile_<x.y>_<mode> file, where <x.y> is the R version\n",
@@ -311,6 +462,8 @@ local({
       "  source(.rprofile_file)\n", file = rprofile, sep = "")
 
     if (!file.exists(rprofile_x.y_sciviews)) {# Create it
+      message("- Writing the SciViews Box 2025 configuration to '",
+        rprofile_x.y_sciviews, "'")
       cat(
         "# SciViews Box 2025 configuration\n",
         "# .libPaths() and options(repos = ...) should not be changed\n",
@@ -332,7 +485,7 @@ local({
 
     # Final message...
     cat("\n")
-    message("=== The SciViews Box 2025 is now active. ===")
+    message("=== The SciViews Box 2025 is now installed. ===")
     cat("- Type `SciViews::R()` as initial command to load the SciViews packages.\n")
     invisible(TRUE)
   }
