@@ -63,8 +63,8 @@ local({
       os <- "win_x86_64"
       lib_size <- 842964600
       lib_md5 <- "73ab4878025f93722c73ccbd4db020fc"
-      patch_size <- 774012
-      patch_md5 <- "231f1e4b8d977eadfaea9c254d8f4d56"
+      patch_size <- 774056
+      patch_md5 <- "3d37001d16cbb7e213a363fb22edb956"
       sv_lib <- NA
       if (isTRUE(allusers)) {# Try to install the library for all users
         sv_lib <- file.path(Sys.getenv("PROGRAMDATA"),
