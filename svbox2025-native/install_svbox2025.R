@@ -2,7 +2,7 @@
 # Copyright (c) 2025, Philippe Grosjean (phgrosjean@sciviews.org).
 
 local({
-  .install_svbox2025 <- function(
+  install_svbox2025 <- function(
       allusers = as.logical(Sys.getenv("SVBOX_ALLUSERS", TRUE)),
       delete.xzfile = as.logical(Sys.getenv("SVBOX_DELETE_XZFILE", TRUE)),
       delete.userlib = as.logical(Sys.getenv("SVBOX_DELETE_USERLIB", NA)),
@@ -58,7 +58,7 @@ local({
 
     # Depending on the OS and flavor, paths are different
     # TODO: deal with other architectures
-    cv_alt_lib <- NA # This will contain the path to an alternate library
+    sv_alt_lib <- NA # This will contain the path to an alternate library
     if (.Platform$OS.type == "windows") {# Windows (assume 64bit Intel)
       os <- "win_x86_64"
       lib_size <- 842964600
@@ -490,5 +490,5 @@ local({
     invisible(TRUE)
   }
 
-  .install_svbox2025()
+  install_svbox2025()
 })
