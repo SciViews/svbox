@@ -1,5 +1,12 @@
 # Configure R 4.4 into a SciViews Box 2025, using a different library
 # Copyright (c) 2025, Philippe Grosjean (phgrosjean@sciviews.org).
+# TODO: better check if the library is correctly installed (should possibly
+# check the presence of all packages in the library; should also test the
+# "touchy" ones like data.table, collapse, sf, curl, ...)
+# TODO: allo to run it in French too
+# TODO: a generic installer that works for several R versions and SciViews Boxes
+# TODO: place the script in an R package, e.g. SciViewsBox::install() with the
+# present script that just install SciViewsBox and calls SciViewsBox::install()
 
 local({
   install_svbox2025 <- function(
@@ -23,7 +30,7 @@ local({
       "# Your code here under..."
     )
 
-    # We need longer timout for file downloads
+    # We need longer timeout for file downloads
     otimeout <- getOption("timeout")
     on.exit(options(timeout = otimeout), add = TRUE)
     options(timeout = max(900, otimeout))
@@ -265,6 +272,17 @@ local({
         stop("At least 4 GB of disk space are required to install the ",
           "SciViews Box 2025 library. Please, free space on the system disk.")
 
+      # Message + allow to cancel here
+      cat("The SciViews Box 2025 will be installed on your machine.\n",
+        "This requires downloading a large file (about 800 MB) and\n",
+        "uncompressing it (this can take several minutes).\n")
+      proceed <- utils::askYesNo(prompts = gettext(c("Yes", "No", "Cancel")),
+        "Install the SciViews Box 2025 now?")
+      if (!isTRUE(proceed)) { # User cancelled or said no
+        message("- Operation cancelled")
+        return(invisible(FALSE))
+      }
+
       # Download the SciViews Box 2025 library
       url <- paste0(
         "https://wp.sciviews.org/svbox2025/files",
@@ -486,6 +504,7 @@ local({
     # Final message...
     cat("\n")
     message("=== The SciViews Box 2025 is now installed. ===")
+    message("Restart this script to update the SciViews Box or to uninstall it.")
     cat("- Type `SciViews::R()` as initial command to load the SciViews packages.\n")
     invisible(TRUE)
   }
